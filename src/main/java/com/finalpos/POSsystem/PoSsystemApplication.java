@@ -8,6 +8,7 @@ public class PoSsystemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PoSsystemApplication.class, args);
+		System.out.println("bro");
 	}
 
 }
