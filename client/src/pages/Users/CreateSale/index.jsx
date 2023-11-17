@@ -47,13 +47,13 @@ export const CreateSale = (props) => {
     return (
         <section>
             <div className="card">
-                <div className="card-header text-center bg-info text-white">
+                <div className="card-header text-center bg-main text-white">
                     <h3>CREATE ACCOUNT FOR SALER</h3>
                 </div>
-                <div className="card-body">
+                <div className="card-body border border-main">
                     <div className="row">
                         <div className="col-md-6">
-                            <div className="alert alert-primary">
+                            <div className="alert alert-primary border border-primary">
                                 <strong>Notice!</strong>
                                 <br />
                                 The username will create automatically by the system base on the name of the email address!!!
@@ -65,7 +65,7 @@ export const CreateSale = (props) => {
                                 For instance: username = <strong>abc</strong> and password = <strong>abc</strong> 
                                 
                             </div>
-                            <div className="alert alert-warning">
+                            <div className="alert alert-warning border-warning">
                                 <strong>Warning!</strong>
                                 <br />
                                 After creating account, there is an email will be sent to the saler's email address to confirm the account.

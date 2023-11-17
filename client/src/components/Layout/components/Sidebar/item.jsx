@@ -22,7 +22,7 @@ function ItemSidebar({ title, url, icon, children }) {
           </div>
         )}
       </div>
-      <div className="submenu" title={title}>
+      <div className="submenu shadow-sm" title={title}>
         <Link style={{cursor: 'pointer'}} className="link submenu-title">
           {title}
         </Link>

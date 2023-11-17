@@ -1,110 +1,23 @@
 import axios from "axios";
 import { useEffect, useState, useRef, Fragment } from "react";
-import ModalDialog from "../../../components/Layout/components/ModalDialog";
-
+import $ from 'jquery';
+import LoadingImg from '../../../components/Layout/components/LoadingImg';
 function Profile() {
   	const token = window.localStorage.getItem("token");
-  	const [isUpdated, setIsUpdated] = useState(false);
-  	const [fileImage, setFileImage] = useState(null);
-	const [avatarUpdated, setAvatarUpdated] = useState(false);
-	const [updateState, setUpdateState] = useState(null);
-
-  	const [rsUser, setRsUser] = useState({});
-  	const [user, setUser] = useState({
-		username: "",
-		name: "",
-		role: "",
-		email: "",
-		status: "",
-		image: "",
-  	});
-  	
-	const [isModalOpen, setIsModalOpen] = useState(false);
-
-	const handleModalOpen = (value) => setIsModalOpen(value);
-
-
-  	// Handle for hover on text of fullname
-  	const [isHovered, setIsHovered] = useState(false);
-  	const handleMouseEnter = () => setIsHovered(true);
-  	const handleMouseLeave = () => setIsHovered(false);
-
-  	// Handle for get fullname value
-  	const handleFullnameChange = (event) => {
-    const newName = event.target.value;
-    setIsUpdated(newName !== user.name);
-    setUser((prevState) => ({ ...prevState, name: newName }));
-  	};
-
-  	// Select the image for the avatar
-  	const fileInputRef = useRef(null);
-
-  	const handleFileChange = () => {
-    	fileInputRef.current.click();
-  	};
-
-  	const handleFileSelected = (e) => {
-		const selectedFile = e.target.files[0];
-		if (selectedFile) {
-		console.log(selectedFile);
-		const imageUrl = URL.createObjectURL(selectedFile);
-		setUser((prevState) => ({ ...prevState, image: imageUrl }));
-		setIsUpdated(true);
-		setFileImage(selectedFile);
-		}
-  	};
-  	const handleUpdateAvatar = async () => {
-		const imageData = new FormData();
-		imageData.append("file", fileImage);
-	
-		if (!fileImage) return null;
-	
-		try {
-			const response = await axios.post('/api/users/upload', imageData, {
-				headers: { 'Authorization': token },
-			});
-		
-			if (response.status !== 200) {
-				throw new Error('Network response was not ok');
-			}
-	
-			return response.data.data;
-		} catch (error) {
-			console.error(error);
-			return null;
-		}
-  	};
-  
-  const updateUserProfile = async () => {
-	setUpdateState(true);
-	if(fileImage){
-		const avatarUrl = await handleUpdateAvatar();
-		if (avatarUrl === null) {
-			console.error('Error updating avatar');
-			return;
-		}
-		setUser((prevState) => ({ ...prevState, image: avatarUrl }));
-		setAvatarUpdated(true);
-	}else{
-		update();
-	}
-  };
-  
-  const update = () => {
-	axios.put('/api/users/update', user, { headers: { 'Authorization': token } })
-		.then((response) => {
-			setIsUpdated(false);
-			setIsModalOpen(true);
-			setUpdateState(false);
-		})
-		.catch((error) => {
-			console.error('Error updating user profile:', error);
-		});
-  }
-	
+	const [user, setUser] = useState({});
+	const [name, setName] = useState(null);
+	const [image, setImage] = useState(null);
+	const [url, setUrl] = useState(null);
+	const [update, setUpdated] = useState(false);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(null);
   // Fetch user for first time
   useEffect(() => {
-    axios
+    handleFetchUser();
+  }, [image]);
+
+  const handleFetchUser = async () => {
+	axios
       .get("/api/current_user/", { headers: { Authorization: token } })
       .then((response) => {
         const data = response.data;
@@ -116,140 +29,187 @@ function Profile() {
         	status: data.status,
         	image: data.image,
         });
-        setRsUser(user);
       })
       .catch((error) => {
         console.log(error);
       });
+  }
 
-    if (!isUpdated) {
-      setUser(rsUser);
-      setFileImage(null);
-    }
+  const handleChangeImg = async (file) => {
+	setImage(file);
+	setUrl(URL.createObjectURL(file));
+	setUpdated(true);
+  }
 
-	if(avatarUpdated) {
-		// Thực hiện cập nhật thông tin người dùng
-		update();
+  const handleChangeName = async (name) =>{
+	setName(name);
+	setUpdated(true);
+  }
+
+  const handleCancelUpdate = () => {
+	setName(user.name);
+	setUpdated(false);
+	setUrl(null);
+  }
+
+	const handleUpdate = () => {
+		setLoading(true);
+		setError(null);
+
+		const formData = new FormData();
+		formData.append("name", name);
+		formData.append("file", image);
+		formData.append("username", user.username);
+
+		axios.patch("/api/users/profile", formData, {
+			headers: {
+				Authorization: token,
+			}
+		})
+			.then((response) => {
+				const res = response.data;
+				if(res.code === 0){
+					$('#profileModal').modal();
+					localStorage.removeItem('token');
+					setUpdated(false);
+				}else{
+					setError(res.message);
+				}
+				setLoading(false);
+				setUpdated(false);
+			})
+			.catch((error) => {
+				setLoading(false);
+				setUpdated(false);
+				setError(error.message);
+			});
 	}
-  }, [avatarUpdated]);
-
-
-
-  return (
-	<Fragment>
-		<div className="card">
-			<div className="card-header">Profile Information</div>
-			<div className="card-body">
-				<div className="mt-2">
-				<div className="row p-5 ">
-					<div className="col-md-4 d-flex flex-column rounded justify-content-center border border-primary p-5">
-					<div className="text-center mb-4 ">
-						<img
-						src={user.image}
-						alt="Avatar"
-						className="img-fluid rounded-circle "
-						width="150"
-						height="150"
-						/>
+  	return (
+		<Fragment>
+			<div className="card">
+				<div className="card-header bg-main text-main">
+					<h4>Profile Information</h4>
+				</div>
+				<div className="card-body">
+					<div className="mt-2">
+					<div className="row p-5 ">
+						<div className="col-md-4 d-flex flex-column rounded justify-content-center border border-primary p-5">
+						<div className="text-center mb-4 ">
+							<img
+							src={url? url : user.image}
+							alt="Avatar"
+							className="img-fluid rounded-circle "
+							width="150"
+							height="150"
+							/>
+						</div>
+						{/* Input for updating avatar */}
+						<div class="file-input-container mx-auto btn btn-sm">
+							<input
+								name="file"
+								type="file"
+								accept="image/*"
+								class="file-input btn"
+								onChange={(e) => handleChangeImg(e.target.files[0])}
+								
+							/>
+							<label for="file" class="file-button">Update avatar <i className="fa-solid fa-pen-to-square"></i></label>
+						</div>
+						</div>
+						<div className="col-md-8 px-5">
+						<div className="d-flex align-items-center mb-4">
+							<input
+								value={name? name : user.name}
+								onChange={(e) => handleChangeName(e.target.value)}
+								className="mb-0 p-1 pr-3 input-cus-name"
+							/>
+						</div>
+						<h5>
+							<span className="p-2 mr-2 badge badge-secondary">Username</span>
+							<span className="p-2 badge badge-info">{user.username}</span>
+						</h5>
+						<h5>
+							<span className="p-2 mr-2 badge badge-secondary">Email</span>
+							<span className="p-2 badge badge-info">{user.email}</span>
+						</h5>
+						<h5>
+							<span className="p-2 mr-2 badge badge-secondary">Role</span>
+							<span className="p-2 badge badge-info">{user.role}</span>
+						</h5>
+						<h5>
+							<span className="p-2 mr-2 badge badge-secondary">Status</span>
+							<span className="p-2 badge badge-info">{user.status}</span>
+						</h5>
+						</div>
 					</div>
-					<input
-						name="file"
-						type="file"
-						accept="image/*"
-						style={{ display: "none" }}
-						ref={fileInputRef}
-						onChange={handleFileSelected}
-					/>
-					<button
-						type="button"
-						className="btn btn-warning"
-						onClick={handleFileChange}
-					>
-						<i className="fa-regular fa-pen-to-square"></i>
-						Update Avatar
-					</button>
-					</div>
-					<div className="col-md-8 px-5">
-					<div className="d-flex align-items-center mb-4">
-						<input
-						value={user.name}
-						className="mb-0 p-1 pr-3 input-cus-name"
-						onMouseEnter={handleMouseEnter}
-						onMouseLeave={handleMouseLeave}
-						onInput={handleFullnameChange}
-						/>
-						{isHovered && (
-						<i
-							className="mx-2 fa-regular fa-pen-to-square ms-2 fa-2x"
-							style={{ color: "green" }}
-						></i>
-						)}
-					</div>
-					<h5>
-						<span className="p-2 mr-2 badge badge-secondary">Username</span>
-						<span className="p-2 badge badge-info">{user.username}</span>
-					</h5>
-					<h5>
-						<span className="p-2 mr-2 badge badge-secondary">Email</span>
-						<span className="p-2 badge badge-info">{user.email}</span>
-					</h5>
-					<h5>
-						<span className="p-2 mr-2 badge badge-secondary">Role</span>
-						<span className="p-2 badge badge-info">{user.role}</span>
-					</h5>
-					<h5>
-						<span className="p-2 mr-2 badge badge-secondary">Status</span>
-						<span className="p-2 badge badge-info">{user.status}</span>
-					</h5>
 					</div>
 				</div>
-				</div>
-			</div>
-			<div className="card-footer">
-				<div className="row">
-				{isUpdated && (
-					<Fragment>
-					<div className="col">
-						{/* Empty column to push buttons to the right */}
+				{/* Check update state */}
+				{update && (
+					<div className="card-footer">
+						<div className="row">
+							<Fragment>
+							<div className="col">
+								{/* Empty column to push buttons to the right */}
+							</div>
+							<div className="col-auto">
+								<button
+									type="button"
+									className="btn btn-warning mr-2 my-1"
+									onClick={handleUpdate}
+									disabled={loading}
+								>
+
+									<span>Update</span>
+								</button>
+								<button
+									type="button"
+									className="btn btn-primary my-1"
+									onClick={handleCancelUpdate}
+									disabled={loading}
+								>
+								<i className="fa-solid fa-ban mr-1"></i>Cancel
+								</button>
+							</div>
+							</Fragment>
+						</div>
 					</div>
-					<div className="col-auto">
-						<button
-							onClick={updateUserProfile}
-							type="button"
-							className="btn btn-warning mr-2 my-1"
-							disabled={updateState}
-						>
-							{updateState ? <i class="fa-solid fa-spinner mr-1"></i> : <i className="fa-solid fa-check mr-1"></i>}
-							<span>Update</span>
-						</button>
-						<button
-							onClick={() => setIsUpdated(false)}
-							type="button"
-							className="btn btn-primary my-1"
-							disabled={updateState}
-						>
-						<i className="fa-solid fa-ban mr-1"></i>Cancel
-						</button>
-					</div>
-					</Fragment>
 				)}
+				{loading && (
+					<div className="text-center">
+						<LoadingImg />
+					</div>
+				)}
+				{error && (
+					<div className="alert alert-danger text-center">
+						{error}
+					</div>
+				)}
+			</div>
+			{/* <!-- The Modal --> */}
+			<div class="modal" id="profileModal">
+				<div class="modal-dialog">
+					<div class="modal-content">
+
+					<div class="modal-header bg-main text-main">
+						<h4 class="modal-title">Profile Notification</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+
+					<div class="modal-body">
+						Your account has been updated successfully! <br />
+						<strong>Please login again to see the changes.</strong>
+					</div>
+
+					<div class="modal-footer">
+						<a href='/logout' class="btn btn-danger">Logout</a>
+					</div>
+
+					</div>
 				</div>
 			</div>
-		</div>
-		{/* <!-- The Modal --> */}
-		{isModalOpen &&
-			<ModalDialog
-				onValueChange={handleModalOpen}
-				title="Notification"
-				button_title="Logout"
-				>
-					Your account has been updated successfully!<br/>
-					<strong>Please logout right now and re-login to the system for updating of newest information!!!</strong>
-			</ModalDialog>
-		}
-	</Fragment>
 
-    
+		</Fragment>
   );
 }
 

@@ -14,7 +14,7 @@ function RegisterHidden() {
             password: password
         }
         axios.post('/api/account/register_admin', data).then((response) => {
-            console.log(response.data);
+            console.log(response);
         })
     }
     return (

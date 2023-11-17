@@ -1,11 +1,18 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import OrderList from '../../../components/OrderList';
 import LoadingImg from "../../../components/Layout/components/LoadingImg";
+import Pagination from "../../../components/Pagination";
 function History() {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const page = queryParams.get('page');
+
+
     const {id} = useParams();
     const [transactions, setTransactions] = useState(null);
+    const [divider, setDivider] = useState(1);
     const [customer, setCustomer] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -14,7 +21,7 @@ function History() {
     const handleFetchTransactions = async () => {
         setLoading(true);
         setError(null);
-        axios.get('/api/customers/' + id + '/transactions', {
+        axios.get('/api/customers/' + id + '/transactions?page='+page, {
             headers: {
                 'Authorization': localStorage.getItem('token')
             }
@@ -24,6 +31,7 @@ function History() {
                 if(res.code === 0){
                     setTransactions(res.data.transactions);
                     setCustomer(res.data.customer);
+                    setDivider(res.data.divider);
                 }else{
                     setError(res.message);
                 }
@@ -37,7 +45,7 @@ function History() {
 
     useEffect(() => {
         handleFetchTransactions();
-    }, []);
+    }, [page]);
     return ( 
         <div>
             <div class="card">
@@ -46,6 +54,9 @@ function History() {
                 </div>
                 <div class="card-body">
                     <OrderList orders={transactions}  fetch={handleFetchTransactions}/>
+                    <div className="row">
+                        <Pagination root={'customers/history/'+id} divider={divider} />
+                    </div>
                 </div>
                     {loading && (
                         <div className="card-footer">

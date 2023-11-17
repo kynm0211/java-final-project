@@ -11,7 +11,7 @@ function Product() {
   }, []);
 
   const fetchProduct = async () => {
-    axios.get(`/api/product/${barcode}`, {
+    axios.get(`/api/products/${barcode}`, {
       headers: {
         'Authorization': localStorage.getItem('token')
       }
@@ -30,7 +30,7 @@ function Product() {
   return (
 
       <div className="card">
-        <div className="card-header bg-info text-white text-center">
+        <div className="card-header bg-main text-white text-center">
           <h3>PRODUCT INFORMATION</h3>
         </div>
         {product && (
@@ -40,30 +40,40 @@ function Product() {
                 <img src={product.image} alt={product.name} className="img-fluid product-img-preview" />
               </div>
               <div className="col-md-9">
-                <h4>{product.name}</h4>
+                <h3>{product.name}</h3>
                 <div className="form-group">
-                  <label>Category:</label>
-                  <p>{product.category}</p>
+                  <div className="row">
+                    <div className="col">
+                      <strong>Category:</strong>
+                      <dl>{product.category}</dl>
+                    </div>
+                    <div className="col">
+                      <strong>Quantity:</strong>
+                      <dl>{product.quantity}</dl>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col">
+                      <strong>Price:</strong>
+                      <dl>{Num2VND(product.retail_price)}</dl>
+                    </div>
+                    <div className="col">
+                      <strong>Creation Date:</strong>
+                      <dl>{new Date(product.creation_date).toLocaleDateString()}</dl>
+                    </div>
+                  </div>
                 </div>
                 <div className="form-group">
-                  <label>Price:</label>
-                  <p>{Num2VND(product.retail_price)}</p>
+                  
                 </div>
                 <div className="form-group">
-                  <label>Quantity:</label>
-                  <p>{product.quantity}</p>
+                  <strong>Barcode:</strong>
+                  <dl>{product.barcode}</dl>
                 </div>
                 <div className="form-group">
-                  <label>Creation Date:</label>
-                  <p>{new Date(product.creation_date).toLocaleDateString()}</p>
-                </div>
-                <div className="form-group">
-                  <label>Barcode:</label>
-                  <p>{product.barcode}</p>
-                </div>
-                <div className="form-group">
-                  <label>Description:</label>
-                  <p>{product.description}</p>
+                  <strong>Description:</strong>
+                  <div className='my-2'><button data-toggle="collapse" data-target="#description" className='btn btn-sm btn-outline-info'>Show description <i class="fa-solid fa-caret-down"></i></button></div>
+                  <dl id="description" class="collapse">{product.description}</dl>
                 </div>
               </div>
             </div>

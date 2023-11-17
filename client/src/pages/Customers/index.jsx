@@ -49,19 +49,19 @@ function Customers() {
     return ( 
         <div>
             <div className="card rounded">
-                <div className="card-header bg-success text-white text-center">
+                <div className="card-header bg-main text-main text-center">
                     <h3>Customer List</h3>
                 </div>
                 <div className="card-body">
                     <div className="row my-3">
                         <div className="col-sm-12 col-md-12 col-lg-8">
                             <div className="form-outline mb-4">
-                                <label>Enter the name or barcode for searching</label>
                                 <input onChange={e => setSearch(e.target.value)} type="search" className="form-control" id="datatable-search-input" placeholder="Search"/>
+                                <blockquote className='blockquote-footer'>Enter the name or phone for searching</blockquote>
                             </div>
                         </div>
                         <div className="col-sm-12 col-md-12 col-lg-1">
-                            <button onClick={()=> handleFetchCustomers()} className="btn btn-sm btn-primary">
+                            <button onClick={()=> handleFetchCustomers()} className="btn btn-sm bg-main text-main">
                                 <i class="fa-solid fa-rotate-right mr-1"></i>
                                 Refresh
                             </button>
@@ -69,8 +69,8 @@ function Customers() {
                     </div>
                     <div className="row">
                         <div className="col-12 center-table">
-                            <table className="table table-responsive-sm table-responsive-md table-striped rounded text-center">
-                                <thead className="thead-dark rounded">
+                            <table className="table table-hover table-bordered table-responsive-sm table-responsive-md table-striped rounded text-center">
+                                <thead className="bg-main text-main rounded">
                                     <tr>
                                         <th scope="col">Order</th>
                                         <th scope="col">Full of name</th>

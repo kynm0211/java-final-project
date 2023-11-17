@@ -53,7 +53,7 @@ function ProductItem({index, product,refreshProducts}) {
             <td>{Num2VND(product.retail_price)}</td>
             <td>{new Date(product.creation_date).toLocaleDateString()}</td>
             <td>
-                <Link to={"/products/"+product.barcode} type="button" className="btn btn-outline-primary btn-sm m-1">
+                <Link to={"/products/"+product.barcode} type="button" className="btn btn-outline-main btn-sm m-1">
                     <i className="fa-solid fa-circle-info mr-2"></i>
                     Details
                 </Link>

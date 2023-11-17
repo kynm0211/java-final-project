@@ -4,28 +4,32 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: orangered; /* color of the thumb */
+  background: var(--sub-background); /* color of the thumb */
   border-radius: 4px; /* roundness of the thumb */
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; /* color of the track */
+  background: var(--main-color-light); /* color of the track */
 }
-
+:root{
+  --main-background: #ED7D31;
+  --main-color-light: #6C5F5B;
+  --sub-background: #4F4A45;
+  --main-color: #F6F1EE;
+}
 /* Firefox scrollbar */
 /* Note: You may need to use the Gecko engine prefix for Firefox, depending on the version. */
 /* For example, it could be ::-webkit-scrollbar-thumb for some versions. */
 * {
-  scrollbar-color: orangered #f1f1f1;
+  scrollbar-color: var(--main-background);
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--main-color);
 }
 
 code {
@@ -75,7 +79,7 @@ code {
 
 .loading-spinner {
   border: 6px solid #f3f3f3; /* Light gray border */
-  border-top: 6px solid #3498db; /* Blue border for spinner animation */
+  border-top: 6px solid var(--main-background); /* Blue border for spinner animation */
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -125,7 +129,7 @@ button{
   position: absolute;
   width: 60px;
   height: 60px;
-  border: 10px solid #e15b64;
+  border: 10px solid var(--main-background);
   border-top-color: transparent;
   border-radius: 50%;
 }
@@ -164,18 +168,37 @@ ul > li {
 }
 
 .bg-main{
-  background-color: orangered !important;
+  background-color: var(--main-background) !important;
+}
+.thead-main{
+  background-color: var(--sub-background) !important;;
+}
+
+.text-main{
+  color: var(--main-color) !important;
+}
+.bg-main-hightlight{
+  background-color: var(--main-color) !important;
 }
 .product__item{
   height: 250px;
 }
+.btn-outline-main{
+  border: 1px solid var(--sub-background) !important;
+  color: var(--sub-background) !important;
+}
+.btn-outline-main:hover{
+  border: 1px solid var(--main-background) !important;
+  background-color: var(--main-background) !important;
+  color: white !important;
+}
 .page-item.active .page-link{
-  background-color: orangered !important;
-  border-color: orangered !important;
+  background-color: var(--sub-background) !important;
+  border-color: var(--sub-background) !important;
   color: white !important;
 }
 .page-link{
-  color: orangered !important;
+  color: var(--sub-background) !important;
 }
 .page-link:focus{
   box-shadow: none !important;
@@ -232,6 +255,44 @@ ul > li {
 
 .border-line::after {
   animation-delay: -7.5s;
+}
+
+.border-main{
+  border: 1px solid F4CE14 !important;
+}
+/* Style for the container */
+.file-input-container {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+/* Style for the actual file input */
+.file-input {
+  font-size: 20px; 
+  position: absolute;
+  top: 0;
+  right: 0;
+  opacity: 0;
+  background-color: var(--main-background);
+}
+.file-input{
+  cursor: pointer;
+  background-color: var(--sub-background) !important;
+}
+/* Style for the button */
+.file-button {
+  background-color: var(--main-background); 
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
+  cursor: pointer;
+}
+.file-button:hover{
+  background-color: var(--sub-background); 
 }
 
 @keyframes animate {

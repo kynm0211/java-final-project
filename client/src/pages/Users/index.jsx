@@ -56,21 +56,20 @@ function UserList() {
     return ( 
         <div>
             <div className="card rounded">
-                <div className="card-header bg-success text-white text-center">
+                <div className="card-header bg-main text-white text-center">
                     <h3>Manage user lists</h3>
                 </div>
                 <div className="card-body">
                     <div className="row my-3">
                         <div className="col-sm-12 col-md-12 col-lg-7">
                             <div className="form-outline mb-4">
-                                <label>Enter the name or email for searching</label>
                                 <input onChange={e => setSearch(e.target.value)} type="search" className="form-control" id="datatable-search-input" placeholder="Search"/>
+                                <blockquote className='blockquote-footer'>Enter the name or email for searching</blockquote>
                             </div>
                         </div>
                         {/* Following by user's role */}
                         <div className="col-sm-12 col-md-12 col-lg-2">
                             <div className="form-group">
-                                <label>Filter</label>
                                 <select
                                     className="form-control"
                                     id="exampleFormControlSelect1"
@@ -80,12 +79,12 @@ function UserList() {
                                     <option value="Administrator">Administrator</option>
                                     <option value="Sale person">Sale person</option>
                                 </select>
+                                <blockquote className='blockquote-footer'>Filter</blockquote>
                             </div>
                         </div>
                         {/* Following by user's status */}
                         <div className="col-sm-12 col-md-12 col-lg-2">
                             <div className="form-group">
-                                <label>Status</label>
                                 <select
                                     className="form-control"
                                     id="exampleFormControlSelect1"
@@ -96,10 +95,11 @@ function UserList() {
                                     <option value="InActive">InActive</option>
                                     <option value="Lock">Lock</option>
                                 </select>
+                                <blockquote className='blockquote-footer'>Status</blockquote>
                             </div>
                         </div>
                         <div className="col-sm-12 col-md-12 col-lg-1">
-                            <button onClick={refreshUsers} className="btn btn-sm btn-primary">
+                            <button onClick={refreshUsers} className="btn btn-sm bg-main text-main">
                                 <i className="fa-solid fa-rotate-right mr-1"></i>
                                 Refresh
                             </button>
@@ -107,8 +107,8 @@ function UserList() {
                     </div>
                     <div className="row">
                         <div className="col-12 center-table">
-                            <table className="table table-bordered table-hover table-responsive-sm table-responsive-md table-responsive-lg table-striped rounded text-center">
-                                <thead className="thead-dark rounded">
+                            <table className="table table-bordered table-hover table-responsive-sm table-responsive-md table-responsive-lg table-striped text-center">
+                                <thead className="bg-main text-main">
                                     <tr>
                                         <th scope="col">Order</th>
                                         <th scope="col">Fullname</th>

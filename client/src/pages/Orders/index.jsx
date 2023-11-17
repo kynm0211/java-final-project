@@ -46,7 +46,7 @@ function Orders() {
     return ( 
         <div>
             <div className="card rounded">
-                <div className="card-header bg-success text-white text-center">
+                <div className="card-header bg-main text-main text-center">
                     <h3>Manage ordered list</h3>
                 </div>
                 <div className="card-body">

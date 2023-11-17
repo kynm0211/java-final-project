@@ -103,13 +103,13 @@ function PaymentModal({UpdateCart, resetCart}) {
 
                     {/* <!-- Tab panes --> */}
                     <div class="tab-content">
-                        <div id="products_tab" class="container tab-pane active"><br/>
+                        <div id="customer_tab" class="container tab-pane active">
+                            <CustomerTab isPay={handleCheckPayable}/>
+                        </div>
+                        <div id="products_tab" class="container tab-pane fade">
                             <ProductTab cart={cart}>
                                 <DetailFee />
                             </ProductTab>
-                        </div>
-                        <div id="customer_tab" class="container tab-pane fade"><br/>
-                            <CustomerTab isPay={handleCheckPayable}/>
                         </div>
                     </div>
                     {loading && <div className="text-center">

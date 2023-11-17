@@ -18,28 +18,8 @@
     --color_Dark2: #252527;
     --color_Light1: #dfdfdf;
     --color_Light2: #c4c4c4;
-    --border-animation: animate 10s linear infinite;
-    --blue-gradient: linear-gradient(
-        0deg,
-        transparent,
-        transparent,
-        #45f3ff,
-        #45f3ff,
-        #45f3ff
-    );
-    --pink-gradient: linear-gradient(
-        0deg,
-        transparent,
-        transparent,
-        #ff2770,
-        #ff2770,
-        #ff2770
-    );
 }
 
-body{
-    background-color: var(--color_Light1);
-}
 /* =============== Sidebar =============== */
 .sidebar{
     position: fixed;
@@ -65,12 +45,12 @@ body{
     width: 100%;
     display: flex;
     align-items: center; /* Vertically center the content */
-    color: var(--color_Dark1);
+    color: var(--sub-background);
     transition: all .3s ease;
     cursor: pointer;
 }
 .logo-box:hover{
-    color: orangered;
+    color: var(--main-background);
 }
 .logo-box i{
     font-size: 30px;
@@ -89,9 +69,10 @@ body{
     margin-left: 10px;
     display: flex; /* Use flexbox */
     align-items: center; /* Vertically center the text */
+    color: var(--sub-background);
 }
 .logo-name:hover{
-    color: orangered;
+    color: var(--main-background);
 }
 
 /* ---------- Sidebar List ---------- */
@@ -118,7 +99,7 @@ body{
     cursor: pointer;
 }
 .sidebar-list li.active .title{
-    background-color: orangered;
+    background-color: var(--main-background);
 }
 .sidebar-list li.active .sidebar-icon{
     color: white !important;
@@ -161,20 +142,20 @@ body{
     opacity: 100%;
     display: flex;
     flex-direction: column;
-    background-color: var(--color_Light2);
+    background-color: white !important;
 }
 .sidebar-list li.dropdown.active .submenu .link{
     padding: 5px 20px;
     font-weight: 500;
 }
 .submenu .link{
-    color: black;
+    color: var(--main-background);
     font-size: 18px;
-    padding: 5px 0;
+    padding: 10px 0;
     transition: all .2s ease;
 }
 .submenu .link:hover{
-    color: orangered;
+    color: var(--sub-background);
 }
 .submenu-title{
     display: none;
@@ -217,21 +198,20 @@ body{
     opacity: 1;
     top: 0;
     pointer-events: initial;
-    background-color: var(--color_Light1);
-    box-shadow: 4px 6px 11px -6px rgba(0,0,0,0.49);
+    background-color: white !important;
+    color: var(--main-color-light);
 }
 .sidebar.close .submenu-title{
     display: block;
-    font-style: 15px;
     color: white;
-    background-color: #1e1e1e;
-    border-top-right-radius: 8px;
+    background-color: var(--main-background);
+    border-top-right-radius: 6px;
 }
 
 /* =============== Home Section =============== */
 .home{
     position: relative;
-    background-color: var(--color_Light1);
+    background-color: var(--main-color-light);
     left: 260px;
     width: calc(100% - 260px);
     transition: all .5s ease;
@@ -293,7 +273,7 @@ body{
 }
 .content{
     padding: 20px;
-    background-color: var(--color_Light1);
+    background-color: var(--main-color);
     transition: all .5s ease;
 }
 .product-img-preview{

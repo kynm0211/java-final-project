@@ -9,7 +9,7 @@ function Customer({index, customer}) {
             <td>{customer.address}</td>
             <td>{new Date(customer.creation_date).toDateString()}</td>
             <td>
-                <Link to={"/customers/"+customer._id} type="button" className="btn btn-outline-primary btn-sm m-1">
+                <Link to={"/customers/"+customer._id} type="button" className="btn btn-outline-main btn-sm m-1">
                     <i className="fa-solid fa-circle-info mr-2"></i>
                     Details
                 </Link>

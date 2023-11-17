@@ -46,7 +46,7 @@ function AddNew() {
           const res = response.data;
           if(res.code === 0){
             const id = res.data.barcode;
-            window.location.href = `/product/${id}`;
+            window.location.href = `/products/${id}`;
           }else{
             setError(res.message);
           }

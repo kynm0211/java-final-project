@@ -45,7 +45,7 @@ function UserItem({ index, user }) {
       <td>
         <button
           type="button"
-          className="btn btn-outline-primary btn-sm m-1"
+          className="btn btn-outline-main btn-sm m-1"
           data-toggle="modal" data-target="#detailModal"
 		      onClick={() => handleViewModal(user)}
         >

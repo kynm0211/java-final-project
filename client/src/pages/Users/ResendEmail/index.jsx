@@ -38,7 +38,7 @@ function ResendEmail() {
     return ( 
         <Fragment >
             <div className="card">
-            <div className="card-header text-center">
+            <div className="card-header bg-main text-main text-center">
                 <h3>RESEND EMAIL</h3>
             </div>
             <div className="card-body">
@@ -57,7 +57,7 @@ function ResendEmail() {
                         {/* Form for resend email */}
                         <form>
                             <div className="form-group">
-                                <label htmlFor="email">Email address</label>
+                                <label>Email address</label>
                                 <input 
                                     type="email" 
                                     className="form-control" 
