@@ -1,7 +1,7 @@
 import FindProducts from "./FindProducts";
 import Products from "./Products";
 import CardDetail from "./Cart";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import DeleteModal from "./Modal/DeleteModal";
 import ResetModal from "./Modal/ResetModal";
 import PaymentModal from "./Modal/PaymentModal";
@@ -15,7 +15,7 @@ function POS() {
     }
 
     return ( 
-        <div>
+        <Fragment>
             <div className="row">
                 <div className="col-md-8">
                     {/* Search or type barcode */}
@@ -23,7 +23,7 @@ function POS() {
                     {/* Product List */}
                     <Products AddToCart={AddToCart}/>
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-4 position-fixed w-100" style={{right:'0'}}>
                     {/* Card Detail */}
                     <CardDetail AddToCart={cart} UpdateCart={AddToCart}/>
                 </div>
@@ -36,7 +36,7 @@ function POS() {
             <PaymentModal UpdateCart={cart} resetCart={AddToCart}/>
             {/* Invoice Modal dialog */}
             <InvoiceTab />
-        </div>
+        </Fragment>
     );
 }
 

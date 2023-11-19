@@ -1,6 +1,6 @@
 import ProductItem from './product';
 import { useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import axios from 'axios';
 import LoadingImg from '../../components/Layout/components/LoadingImg';
 import Pagination from '../../components/Pagination';
@@ -47,7 +47,7 @@ function ProductListAdmin() {
 
     const refreshProducts = async () => fetchProducts();
     return ( 
-        <div>
+        <Fragment>
             <div className="card rounded">
                 <div className="card-header bg-main text-white text-center">
                     <h3>Manage product lists</h3>
@@ -125,7 +125,7 @@ function ProductListAdmin() {
                         </div>
                     </div>)}
             </div>
-        </div>
+        </Fragment>
     );
 }
 

@@ -25,7 +25,7 @@ function ProductItem({index, product,refreshProducts}) {
 
       const handleRemoveProduct = () => {
 
-        axios.delete(`/api/product/delete/${product.barcode}`, {
+        axios.delete(`/api/products/${product.barcode}`, {
           headers: {
             'Authorization': localStorage.getItem('token')
           }

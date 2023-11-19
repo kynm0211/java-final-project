@@ -27,8 +27,8 @@ function Sidebar({role}) {
   }, []);
 
   return (
-    <div className="sidebar-container bg-light shadow-sm">
-      <div className="sidebar close bg-light">
+    <div className="sidebar-container bg-main-highlight shadow-sm">
+      <div className="sidebar close bg-main-highlight shadow">
         {/* <!-- ========== Logo ============  --> */}
         <div className="logo-box" onClick={toggleSidebar}>
             <i className="fa-solid fa-bars"></i>

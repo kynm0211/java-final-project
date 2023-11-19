@@ -38,7 +38,7 @@ function AddNew() {
         setLoading(true);
         setError(null);
         try {
-          const response = await axios.post("/api/product/add", product, {
+          const response = await axios.post("/api/products/add", product, {
             headers: {
               'Authorization': localStorage.getItem('token')
             }

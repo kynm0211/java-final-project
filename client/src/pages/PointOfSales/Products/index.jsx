@@ -48,7 +48,7 @@ function Products({AddToCart}) {
     return (
         <div className="row mt-5">
             <div className="col-md-12">
-                <div className="card">
+                <div className="card shadow-sm">
                     <div className="card-body">
                         <div className="row">
                             {loading && (

@@ -19,25 +19,26 @@ function DirectLogin() {
     const handleVerifyToken = async (token) =>{
 
         
-        axios.post('/api/auth/direct-login', {token})
+        axios.post('/api/account/direct', {token})
         .then(response => {
             setError(false);
-            const data = response.data;
-            if(data.code === 12){
+            const res = response.data;
+            if(res.code === 12){
+                localStorage.setItem('token', res.data.token);
                 window.location.href = '/renew-password';
-            }else if(data.code === 0){
+            }else if(res.code === 0){
+                localStorage.setItem('token', res.data.token);
                 window.location.href = '/';
             }else{
                 setError(true);
-                const errorData = data.data;
-                setData(errorData.message);
-                setAlert(errorData.name);
+                setData(res.message);
+                setAlert(res.data);
             }
         })
         .catch(error => {
             setError(true);
-            setData(error.data);
-            setAlert(error.message);
+            setData(error.message);
+            setAlert("JWT Error");
         });
     
 

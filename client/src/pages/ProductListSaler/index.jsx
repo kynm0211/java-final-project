@@ -1,5 +1,5 @@
 import ProductItem from './product';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import {useLocation} from 'react-router-dom';
 import axios from 'axios';
 import LoadingImg from '../../components/Layout/components/LoadingImg';
@@ -46,7 +46,7 @@ function ProductListSaler() {
 
     const refreshProducts = async () => fetchProducts();
     return ( 
-        <div>
+        <Fragment>
             <div className="card rounded">
                 <div className="card-header bg-main text-main text-center">
                     <h3>Manage product lists</h3>
@@ -122,7 +122,7 @@ function ProductListSaler() {
                     </div>
                 )}
             </div>
-        </div>
+        </Fragment>
     );
 }
 

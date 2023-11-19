@@ -18,9 +18,19 @@ function App() {
 		const token = localStorage.getItem('token');
 		if (token) {
 			// Fetch user data
-			axios.get('/api/current_user', { headers: { 'Authorization': token } })
+			axios.get('/api/account/', { headers: { 'Authorization': token } })
 			.then(response => {
-				setUser(response.data);
+				const res = response.data;
+				if (res.code !== 0) {
+					// Invalid token
+					localStorage.removeItem('token');
+					setUser(null);
+					setLoading(false);
+					return;
+				}else{
+					setUser(res.data);
+
+				}
 				setLoading(false);
 			})
 			.catch(error => {

@@ -89,12 +89,12 @@ function CardDetail({AddToCart, UpdateCart}) {
     }
 
     return (
-    <div className="card">
+    <div className="card shadow" style={{height: '90vh'}}>
       <div className="card-header bg-dark text-light">
         Cart Detail
         <i className="fa-solid fa-cart-shopping ml-2"></i>
       </div>
-      <div className="card-body">
+      <div className="card-body overflow-auto">
         {cart.map((product, index) => {
           return <CartItem key={index}
 		  	product={product}

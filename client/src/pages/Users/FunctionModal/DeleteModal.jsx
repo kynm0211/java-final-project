@@ -3,19 +3,22 @@ import axios from "axios";
 function DeleteModal({ refreshUsers }) {
   const handleDeleteUser = () => {
     const userId = document.getElementById("id-delete").textContent;
-    axios({
-		method: "delete",
-		url: `/api/delete_user/${userId}`,
+    axios.delete(`/api/users/${userId}`,{
 		headers: {
 			Authorization: localStorage.getItem("token"),
 		},
     })
       .then((response) => {
-			$("#deleteModal").modal("hide");
-			refreshUsers();
+			const res = response.data;
+			if(res.code === 0){
+				$("#deleteModal").modal("hide");
+				refreshUsers();
+			}else{
+				console.log(res.message);
+			}
       })
       .catch((error) => {
-        	console.error("Lỗi xóa người dùng", error);
+        	console.error("Error deleting user", error);
       });
   };
   return (

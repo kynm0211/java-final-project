@@ -47,37 +47,35 @@ function History() {
         handleFetchTransactions();
     }, [page]);
     return ( 
-        <div>
-            <div class="card">
-                <div className="card-header bg-main text-light">
-                    <h3 className="text-uppercase">History transtions of {customer && customer.name}</h3>
-                </div>
-                <div class="card-body">
-                    <OrderList orders={transactions}  fetch={handleFetchTransactions}/>
-                    <div className="row">
-                        <Pagination root={'customers/history/'+id} divider={divider} />
-                    </div>
-                </div>
-                    {loading && (
-                        <div className="card-footer">
-                            <div className="text-center">
-                                <LoadingImg />
-                            </div>
-                        </div>
-                    )}
-                    {!loading && (
-                        <div className="card-footer">
-                            #{customer && customer._id}
-                        </div>
-                    )}
-                    {error && (
-                        <div className="card-footer">
-                            <div className="alert alert-danger" role="alert">
-                                {error}
-                            </div>
-                        </div>
-                    )}
+        <div class="card">
+            <div className="card-header bg-main text-light">
+                <h3 className="text-uppercase">History transtions of {customer && customer.name}</h3>
             </div>
+            <div class="card-body">
+                <OrderList orders={transactions}  fetch={handleFetchTransactions}/>
+                <div className="row">
+                    <Pagination root={'customers/history/'+id} divider={divider} />
+                </div>
+            </div>
+                {loading && (
+                    <div className="card-footer">
+                        <div className="text-center">
+                            <LoadingImg />
+                        </div>
+                    </div>
+                )}
+                {!loading && (
+                    <div className="card-footer">
+                        #{customer && customer._id}
+                    </div>
+                )}
+                {error && (
+                    <div className="card-footer">
+                        <div className="alert alert-danger" role="alert">
+                            {error}
+                        </div>
+                    </div>
+                )}
         </div>
     );
 }

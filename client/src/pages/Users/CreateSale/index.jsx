@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import axios from 'axios';
 import './CreateSale.css';
 import LoadingImg from "../../../components/Layout/components/LoadingImg";
@@ -23,7 +23,7 @@ export const CreateSale = (props) => {
             email: email
         };
 
-        axios.post('/api/admin/create-account-sale', userData, {
+        axios.post('/api/users/register', userData, {
             headers: { 
                 'Authorization': localStorage.getItem('token'),
             }
@@ -45,7 +45,7 @@ export const CreateSale = (props) => {
             });
     }
     return (
-        <section>
+        <Fragment>
             <div className="card">
                 <div className="card-header text-center bg-main text-white">
                     <h3>CREATE ACCOUNT FOR SALER</h3>
@@ -126,7 +126,7 @@ export const CreateSale = (props) => {
                     </div>
                 )}
             </div>
-        </section>
+        </Fragment>
     );
 }
 

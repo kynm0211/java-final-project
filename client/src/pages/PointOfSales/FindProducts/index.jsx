@@ -3,7 +3,7 @@ import Barcode from "./barcodeComponent";
 function FindProducts() {
     return ( 
         <div className="row">
-            <div className="col-12 bg-light py-5">
+            <div className="col-12 bg-light py-5 shadow-sm">
                 <ul className="nav nav-tabs justify-content-center" role="tablist">
                     <li className="nav-item">
                         <a className="nav-link active" data-toggle="tab" href="#search">Search</a>

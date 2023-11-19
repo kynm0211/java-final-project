@@ -1,14 +1,15 @@
 import HeaderPOS from '../components/HeaderPOS';
+import { Fragment } from 'react';
 function POSLayout({children, user}) {
     return (
-        <div>
+        <Fragment>
             <HeaderPOS user={user}/>
             <container>
-                <div className='content'>
+                <div className='content mt-5'>
                     {children}
                 </div>
             </container>
-        </div>
+        </Fragment>
     );
 }
 

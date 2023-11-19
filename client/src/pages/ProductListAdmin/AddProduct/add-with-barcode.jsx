@@ -13,7 +13,11 @@ function AddwBarcode() {
         setLoading(true);
         setProduct(null);
         setError(null);
-        axios.get('/api/products/' + barcode)
+        axios.get('/api/products/' + barcode, {
+            headers: {
+                'Authorization': localStorage.getItem('token'),
+            }
+        })
             .then((response) =>{
                 const res = response.data;
                 console.log(res);
@@ -26,7 +30,7 @@ function AddwBarcode() {
                 }
             })
             .catch((error) => {
-                setError(error);
+                setError(error.message);
                 setLoading(false);
             });
     }
@@ -43,23 +47,26 @@ function AddwBarcode() {
 
     const handleUpdateProduct = async (e) => {
         e.preventDefault();
-        setError(null);
-        axios.patch('/api/products/' + barcode,{
-            amount: amount
-        })
-        .then(response => {
-            const res = response.data;
-            if (res.code === 0) {
-                setProduct(res.data);
-                window.alert('Product has been updated!');
-            } else {
-                setError(res.message);
+        setError(null);   
+        axios.patch('/api/products/' + barcode, { amount }, {
+            headers: {
+                'Authorization': localStorage.getItem('token'),
             }
         })
-        .catch((e) => {
-            setError(e.message);
-        });
-
+            .then(response => {
+                const res = response.data;
+                if (res.code === 0) {
+                    setProduct(res.data);
+                    window.alert('Product has been updated!');
+                } else {
+                    setError(res.message);
+                }
+            })
+            .catch((e) => {
+                setError(e.message);
+            });
+        
+        
     }
     useEffect(() => {}, [product]);
     return ( 

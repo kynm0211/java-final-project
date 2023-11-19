@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import OrderList from '../../../components/OrderList';
 import { useLocation } from 'react-router-dom';
 import Pagination from '../../../components/Pagination';
@@ -44,12 +44,12 @@ function Transactions({customer_id}) {
 
 
     return ( 
-        <div>
+        <Fragment>
             <OrderList orders={transactions} fetch={handleFetchTransactions}/>
             <div className="row">
                 <Pagination root={'customers/'+customer_id} divider={divider}/>
             </div>
-        </div>
+        </Fragment>
     );
 }
 

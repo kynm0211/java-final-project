@@ -21,7 +21,7 @@ function Header({user, layout}) {
 	}
 
 	return (
-		<nav className="navbar navbar-light bg-light nav-custom nav__pos">
+		<nav className="navbar navbar-light bg-light nav-custom nav__pos position-fixed fixed-top shadow-sm">
 
 		<div className="custom-nav-side ml-auto" id="navbarNav">
 			<ul className="navbar-nav navbar-nav-inline">

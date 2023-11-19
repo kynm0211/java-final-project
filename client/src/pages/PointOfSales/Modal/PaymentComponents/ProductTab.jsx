@@ -1,7 +1,8 @@
 import ProductItem from "./ProductItem";
+import { Fragment } from "react";
 function ProductTab({cart, children}) {
     return ( 
-        <div>
+        <Fragment>
             <table className="table table-responsive-sm table-bordered table-striped text-center table-hover">
                 <thead>
                     <tr>
@@ -21,7 +22,7 @@ function ProductTab({cart, children}) {
                 </tbody>
             </table>
             {children}
-        </div>
+        </Fragment>
     );
 }
 

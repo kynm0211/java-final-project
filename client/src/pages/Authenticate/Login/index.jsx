@@ -25,7 +25,7 @@ export const Login = (props) => {
             password: password,
         };
           
-        axios.post('/api/login', data, {
+        axios.post('/api/account/login', data, {
             headers: {
               'Content-Type': 'application/json',
             }
@@ -90,7 +90,7 @@ export const Login = (props) => {
 
                 {/* Remind Password */}
                 <div id="formFooter" className="mt-4">
-                    <Link className="underlineHover" to="/forget">Forgot Password?</Link>
+                    <Link className="underlineHover">Developed by MinhKy & HongKiet</Link>
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import axios from "axios";
 import LoadingImg from "../../../components/Layout/components/LoadingImg";
 
@@ -29,7 +29,7 @@ function RenewPassword() {
         const data = {
             password: password,
         };
-        axios.put('/api/renew-password', data, {
+        axios.put('/api/account/renew-password', data, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `${token}`
@@ -37,7 +37,6 @@ function RenewPassword() {
         })
             .then(response => {
                 const res = response.data;
-                console.log(res.data);
                 if (res.code === 0) {
                     localStorage.removeItem('token');
                     window.location.href = '/';
@@ -52,7 +51,7 @@ function RenewPassword() {
         });
     }
     return ( 
-        <div>
+        <Fragment>
             <div className="row p-0 m-0 d-flex align-items-center" style={{height: '100vh'}}>
                 <div className="col-md-4"></div>
                 <div className="col-md-4">
@@ -99,7 +98,7 @@ function RenewPassword() {
                     </div>
                 </div>
                 <div className="col-md-4"></div></div>
-        </div>
+        </Fragment>
     );
 }
 

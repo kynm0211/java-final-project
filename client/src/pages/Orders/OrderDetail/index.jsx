@@ -61,7 +61,7 @@ function OrderDetail() {
     }
     return ( 
         <div class="card">
-            <div class="card-header text-dark">
+            <div class="card-header text-main bg-main">
                 <h3>CODE ORDER #{order_number}</h3>
             </div>
             <div class="card-body capture-invoice">

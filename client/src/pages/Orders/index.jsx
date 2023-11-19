@@ -44,32 +44,30 @@ function Orders() {
         fetchOrders();
     },[page]);
     return ( 
-        <div>
-            <div className="card rounded">
-                <div className="card-header bg-main text-main text-center">
-                    <h3>Manage ordered list</h3>
-                </div>
-                <div className="card-body">
-                   <OrderList orders={orders} fetch={fetchOrders}/>
-                   <div className="row">
-                        <Pagination root='orders' divider={divider}/>
-                   </div>
-                </div>
-                {error && (
-                    <div className="card-footer">
-                        <div className="alert alert-danger" role="alert">
-                            {error}
-                        </div>
-                    </div>
-                )}
-                {loading && (
-                    <div className="card-footer">
-                        <div className="text-center">
-                            <LoadingImg />
-                        </div>
-                    </div>
-                )}
+        <div className="card rounded">
+            <div className="card-header bg-main text-main text-center">
+                <h3>Manage ordered list</h3>
             </div>
+            <div className="card-body">
+                <OrderList orders={orders} fetch={fetchOrders}/>
+                <div className="row">
+                    <Pagination root='orders' divider={divider}/>
+                </div>
+            </div>
+            {error && (
+                <div className="card-footer">
+                    <div className="alert alert-danger" role="alert">
+                        {error}
+                    </div>
+                </div>
+            )}
+            {loading && (
+                <div className="card-footer">
+                    <div className="text-center">
+                        <LoadingImg />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

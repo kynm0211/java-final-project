@@ -27,7 +27,7 @@ function EditProduct() {
     }, []);
 
     const fetchProduct = async () => {
-        axios.get(`/api/product/${barcode}`, {
+        axios.get(`/api/products/${barcode}`, {
             headers: {
                 'Authorization': localStorage.getItem('token')
             }
@@ -53,7 +53,7 @@ function EditProduct() {
     };
 
     const handleSave = () => {
-        axios.put(`/api/product/edit/${barcode}`, editedProduct, {
+        axios.put(`/api/products/${barcode}`, editedProduct, {
           headers: {
             'Authorization': localStorage.getItem('token')
           }

@@ -9,7 +9,7 @@ function OrderList({orders, fetch}) {
                 <div className="col-sm-12 col-md-12 col-lg-8">
                     <div className="form-outline mb-4">
                         <input onChange={e => setSearch(e.target.value)} type="search" className="form-control" id="datatable-search-input" placeholder="Search"/>
-                        <blockquote className="blockquote-footer">Enter the name or barcode for searching</blockquote>
+                        <blockquote className="blockquote-footer">Enter the order number for searching</blockquote>
                     </div>
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-3">

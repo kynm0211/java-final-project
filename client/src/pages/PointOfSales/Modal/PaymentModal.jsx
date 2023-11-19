@@ -37,7 +37,11 @@ function PaymentModal({UpdateCart, resetCart}) {
                 cash: cash,
                 token: token
             }
-        axios.post('/api/create-a-bill', payment)
+        axios.post('/api/pos/create-a-bill',payment,{
+            headers: {
+                'Authorization': token,
+            }
+        })
             .then(response => {
                 const data = response.data;
                 if(data.code !== 0){
@@ -45,7 +49,11 @@ function PaymentModal({UpdateCart, resetCart}) {
                 }else{
                     const order = data.data;
                     const order_number = order.order_number;
-                    axios.get('/api/orders/'+order_number)
+                    axios.get('/api/orders/'+order_number, {
+                        headers: {
+                            'Authorization': token,
+                        }
+                    })
                         .then(response => {
                             const data = response.data;
                             if(data.code !== 0){

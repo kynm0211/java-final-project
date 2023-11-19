@@ -9,7 +9,7 @@ function Header({user, layout}) {
     };
 
 	return (
-		<nav className="navbar navbar-light bg-light nav-custom py-2">
+		<nav className="navbar bg-main-highlight nav-custom py-2">
 			<div className="custom-nav-side ml-auto" id="navbarNav">
 				<ul className="d-flex align-content-center m-0" onClick={toggleMenu}>
 					<li className="nav-item text-right">

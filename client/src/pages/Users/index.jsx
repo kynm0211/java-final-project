@@ -1,5 +1,5 @@
 import UserItem from './user';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import LoadingImg from '../../components/Layout/components/LoadingImg';
@@ -54,7 +54,7 @@ function UserList() {
 
     const refreshUsers = async () => fetchUsers();
     return ( 
-        <div>
+        <Fragment>
             <div className="card rounded">
                 <div className="card-header bg-main text-white text-center">
                     <h3>Manage user lists</h3>
@@ -149,7 +149,7 @@ function UserList() {
             <DetailModal />
             <EditModal refreshUsers= {refreshUsers}/>
             <DeleteModal refreshUsers= {refreshUsers}/>
-        </div>
+        </Fragment>
     );
 }
 

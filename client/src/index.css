@@ -177,7 +177,7 @@ ul > li {
 .text-main{
   color: var(--main-color) !important;
 }
-.bg-main-hightlight{
+.bg-main-highlight{
   background-color: var(--main-color) !important;
 }
 .product__item{
