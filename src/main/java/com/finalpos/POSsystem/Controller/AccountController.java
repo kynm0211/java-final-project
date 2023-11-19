@@ -59,8 +59,17 @@ public class AccountController {
         }
     }
 
-    @GetMapping("/profile")
+    @GetMapping("/")
     public Package profile(){
+        try{
+            return new Package(0, "success", null);
+        }catch (Exception e){
+            return new Package(404, e.getMessage(), null);
+        }
+    }
+
+    @PatchMapping("/")
+    public Package updateProfile(){
         try{
             return new Package(0, "success", null);
         }catch (Exception e){
