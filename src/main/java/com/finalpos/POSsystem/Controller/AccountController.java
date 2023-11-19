@@ -36,9 +36,9 @@ public class AccountController {
     public Package register_admin(@RequestBody UserModel model) {
         try{
             System.out.println(model);
-            model.setRole("administator");
+            model.setRole("Administator");
             model.setImage(defaultAvatar);
-            model.setStatus("active");
+            model.setStatus("Active");
             model.setPassword(passwordEndcoder.encode(model.getPassword()));
             model.setCreated_at(java.time.LocalDateTime.now());
             db.save(model);
