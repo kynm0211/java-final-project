@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.security.Key;
 import java.time.LocalDateTime;
@@ -23,6 +25,7 @@ public class AccountController {
     @Autowired
     UserRepository db;
 
+    PasswordEncoder passwordEndcoder = new BCryptPasswordEncoder();
     @Value("${default.application.avatar}")
     private String defaultAvatar;
 
@@ -35,6 +38,8 @@ public class AccountController {
             System.out.println(model);
             model.setRole("administator");
             model.setImage(defaultAvatar);
+            model.setStatus("active");
+            model.setPassword(passwordEndcoder.encode(model.getPassword()));
             model.setCreated_at(java.time.LocalDateTime.now());
             db.save(model);
             return new Package(0, "success", model);
@@ -48,7 +53,7 @@ public class AccountController {
     public Package login(@RequestBody UserModel loginUser) {
         try {
             UserModel user = db.findByUsername(loginUser.getUsername());
-            if (user != null && user.getPassword().equals(loginUser.getPassword())) {
+            if (user != null && passwordEndcoder.matches(loginUser.getPassword(), user.getPassword())) {
                 String token = generateToken(user);
                 LoginResponse loginResponse = new LoginResponse(token, user);
                 return new Package(0, "Login success",loginResponse);
