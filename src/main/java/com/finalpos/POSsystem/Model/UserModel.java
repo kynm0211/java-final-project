@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class UserModel {
+    @Id
     private String username;
     private String name;
     private String email;

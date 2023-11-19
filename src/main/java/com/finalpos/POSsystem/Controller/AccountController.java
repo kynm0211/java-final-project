@@ -36,11 +36,17 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public Package login(){
-        try{
-            return new Package(0, "success", null);
-        }catch (Exception e){
-            return new Package(404, e.getMessage(), null);
+    public Package login(@RequestBody UserModel loginUser) {
+        try {
+            UserModel user = db.findByUsername(loginUser.getUsername());
+            if (user != null && user.getPassword().equals(loginUser.getPassword())) {
+                user.setPassword(null);
+                return new Package(0, "Login success", user);
+            } else {
+                return new Package(404, "Invalid username or password", null);
+            }
+        } catch (Exception e) {
+            return new Package(500, e.getMessage(), loginUser);
         }
     }
 
