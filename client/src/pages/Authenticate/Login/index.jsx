@@ -20,14 +20,9 @@ export const Login = (props) => {
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
     
-        const data = {
-            username: username,
-            password: password,
-        };
-          
-        axios.post('/api/account/login', data, {
+        axios.post('/api/account/login', {username, password}, {
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded',
             }
         })
             .then(response => {

@@ -58,6 +58,7 @@ public class AccountController {
             if (userDB != null && passwordEndcoder.matches(password, userDB.getPassword())) {
                 String tokenString = generateToken(userDB);
 
+                userDB.setPassword(null);
                 Object data = new Object() {
                     public final String token = tokenString;
                     public final UserModel user = userDB;
