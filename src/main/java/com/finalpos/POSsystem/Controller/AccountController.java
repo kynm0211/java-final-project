@@ -19,6 +19,7 @@ import java.security.Key;
 import java.time.LocalDateTime;
 
 @Controller
+@RestController
 @RequestMapping("/api/account")
 @ResponseBody
 public class AccountController {
@@ -50,23 +51,33 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public Package login(@RequestBody UserModel loginUser) {
+    public Package login(@RequestParam("username") String username,
+                         @RequestParam("password") String password) {
         try {
-            UserModel user = db.findByUsername(loginUser.getUsername());
-            if (user != null && passwordEndcoder.matches(loginUser.getPassword(), user.getPassword())) {
-                String token = generateToken(user);
-                LoginResponse loginResponse = new LoginResponse(token, user);
-                return new Package(0, "Login success",loginResponse);
+            UserModel userDB = db.findByUsername(username);
+            if (userDB != null && passwordEndcoder.matches(password, userDB.getPassword())) {
+                String tokenString = generateToken(userDB);
+
+                Object data = new Object() {
+                    public final String token = tokenString;
+                    public final UserModel user = userDB;
+                };
+
+//                LoginResponse loginResponse = new LoginResponse(token, user);
+                return new Package(0, "Login success", data);
             } else {
                 return new Package(404, "Invalid username or password", null);
             }
         } catch (Exception e) {
-            return new Package(500, e.getMessage(), loginUser);
+            return new Package(500, e.getMessage(), null);
         }
     }
 
     @PostMapping("/change-password")
-    public Package changePassword(@RequestBody ChangePasswordRequest changePasswordRequest,
+    public Package changePassword(
+                                  @RequestParam("currentPassword") String currentPassword,
+                                  @RequestParam("newPassword") String newPassword,
+                                  @RequestParam("confirmPassword") String confirmPassword,
                                   @RequestHeader(name = "Authorization") String token){
         try{
             if (validateToken(token)) {
@@ -74,10 +85,10 @@ public class AccountController {
                 String username = claims.getSubject();
 
                 UserModel user = db.findByUsername(username);
-                if (user != null && user.getPassword().equals(changePasswordRequest.getCurrentPassword())) {
-                    user.setPassword(changePasswordRequest.getNewPassword());
+                if (user != null && passwordEndcoder.matches(currentPassword, user.getPassword())) {
+                    user.setPassword(passwordEndcoder.encode(newPassword));
                     db.save(user);
-                    return new Package(0, "Changing password successfully", null);
+                    return new Package(0, "Changing password successfully", user);
                 } else {
                     return new Package(401, "Incorrect current password", null);
                 }
@@ -116,6 +127,15 @@ public class AccountController {
         }
     }
 
+    @PutMapping("/renew-password")
+    public Package renewPassword(){
+        try{
+            return new Package(0, "success", null);
+        }catch (Exception e){
+            return new Package(404, e.getMessage(), null);
+        }
+    }
+
     public static String generateToken(UserModel user) {
         return Jwts.builder()
                 .claim("username", user.getUsername())
@@ -124,7 +144,7 @@ public class AccountController {
                 .claim("image", user.getImage())
                 .claim("role", user.getRole())
                 .claim("status", user.getStatus())
-                .signWith(SignatureAlgorithm.HS512, JWT_Key)
+                .signWith(SignatureAlgorithm.HS256, JWT_Key)
                 .compact();
     }
 
