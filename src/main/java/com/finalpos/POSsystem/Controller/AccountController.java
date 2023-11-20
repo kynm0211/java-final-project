@@ -1,22 +1,26 @@
 package com.finalpos.POSsystem.Controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.finalpos.POSsystem.Model.*;
 import com.finalpos.POSsystem.Model.Package;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.core.env.Environment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.net.http.HttpHeaders;
 import java.security.Key;
-import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+
+import static javax.crypto.Cipher.SECRET_KEY;
 
 @Controller
 @RestController
@@ -25,8 +29,8 @@ import java.time.LocalDateTime;
 public class AccountController {
     @Autowired
     UserRepository db;
-
     PasswordEncoder passwordEndcoder = new BCryptPasswordEncoder();
+
     @Value("${default.application.avatar}")
     private String defaultAvatar;
 
@@ -102,10 +106,17 @@ public class AccountController {
     }
 
     @GetMapping("/")
-    public Package profile(){
-        try{
-            return new Package(0, "success", null);
-        }catch (Exception e){
+    public Package profile(@RequestHeader("Authorization") String token){
+        try {
+            String[] chunks = token.split("\\.");
+            Base64.Decoder decoder = Base64.getUrlDecoder();
+
+            String header = new String(decoder.decode(chunks[0]));
+            String payload = new String(decoder.decode(chunks[1]));
+            Map<String, String> body = JwtTokenHeaders(payload);
+
+            return new Package(0, "success", body);
+        } catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
     }
@@ -140,15 +151,14 @@ public class AccountController {
     public static String generateToken(UserModel user) {
         return Jwts.builder()
                 .claim("username", user.getUsername())
+                .claim("name", user.getName())
                 .claim("email", user.getEmail())
-                .claim("role", user.getRole())
                 .claim("image", user.getImage())
                 .claim("role", user.getRole())
                 .claim("status", user.getStatus())
                 .signWith(SignatureAlgorithm.HS256, JWT_Key)
                 .compact();
     }
-
 
     public static boolean validateToken(String token) {
         try {
@@ -159,5 +169,17 @@ public class AccountController {
         }
     }
 
-
+    private Map<String, String> JwtTokenHeaders(String jsonString) {
+        Map<String, String> jsonMap;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            // convert JSON string to Map
+            jsonMap = mapper.readValue(jsonString,
+                    new TypeReference<>() {
+                    });
+            return jsonMap;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 }
