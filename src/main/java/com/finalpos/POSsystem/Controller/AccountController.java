@@ -41,7 +41,7 @@ public class AccountController {
     public Package register_admin(@RequestBody UserModel model) {
         try{
             System.out.println(model);
-            model.setRole("Administator");
+            model.setRole("Administrator");
             model.setImage(defaultAvatar);
             model.setStatus("Active");
             model.setPassword(passwordEndcoder.encode(model.getPassword()));
@@ -67,8 +67,6 @@ public class AccountController {
                     public final String token = tokenString;
                     public final UserModel user = userDB;
                 };
-
-//                LoginResponse loginResponse = new LoginResponse(token, user);
                 return new Package(0, "Login success", data);
             } else {
                 return new Package(404, "Invalid username or password", null);
@@ -108,14 +106,8 @@ public class AccountController {
     @GetMapping("/")
     public Package profile(@RequestHeader("Authorization") String token){
         try {
-            String[] chunks = token.split("\\.");
-            Base64.Decoder decoder = Base64.getUrlDecoder();
-
-            String header = new String(decoder.decode(chunks[0]));
-            String payload = new String(decoder.decode(chunks[1]));
-            Map<String, String> body = JwtTokenHeaders(payload);
-
-            return new Package(0, "success", body);
+            Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
+            return new Package(0, "success", claims);
         } catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
@@ -169,17 +161,4 @@ public class AccountController {
         }
     }
 
-    private Map<String, String> JwtTokenHeaders(String jsonString) {
-        Map<String, String> jsonMap;
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            // convert JSON string to Map
-            jsonMap = mapper.readValue(jsonString,
-                    new TypeReference<>() {
-                    });
-            return jsonMap;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
 }
