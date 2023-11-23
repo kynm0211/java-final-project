@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @ToString
 public class UserModel {
     @Id
+    private String id;
     private String username;
     private String name;
     private String email;

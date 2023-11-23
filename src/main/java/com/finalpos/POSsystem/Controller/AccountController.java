@@ -2,10 +2,13 @@ package com.finalpos.POSsystem.Controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.finalpos.POSsystem.Model.UserRepository;
 import com.finalpos.POSsystem.Model.*;
 import com.finalpos.POSsystem.Model.Package;
+import com.mongodb.client.result.UpdateResult;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.net.http.HttpHeaders;
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import static javax.crypto.Cipher.SECRET_KEY;
 
@@ -84,14 +83,16 @@ public class AccountController {
                                   @RequestHeader(name = "Authorization") String token){
         try{
             if (validateToken(token)) {
-                Claims claims = Jwts.parser().setSigningKey("yourSecretKey").parseClaimsJws(token).getBody();
-                String username = claims.getSubject();
+                Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
+                String username = claims.get("username", String.class);
 
                 UserModel user = db.findByUsername(username);
                 if (user != null && passwordEndcoder.matches(currentPassword, user.getPassword())) {
+                    // Update user password
                     user.setPassword(passwordEndcoder.encode(newPassword));
-                    db.save(user);
-                    return new Package(0, "Changing password successfully", user);
+                    UserModel result = db.save(user);
+
+                    return new Package(0, "Changing password successfully", result);
                 } else {
                     return new Package(401, "Incorrect current password", null);
                 }
