@@ -1,25 +1,25 @@
 package com.finalpos.POSsystem.Controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.finalpos.POSsystem.Config.FirebaseService;
 import com.finalpos.POSsystem.Model.UserRepository;
 import com.finalpos.POSsystem.Model.*;
 import com.finalpos.POSsystem.Model.Package;
-import com.mongodb.client.result.UpdateResult;
+import com.google.api.client.json.webtoken.JsonWebToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.apache.catalina.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Key;
-
-
-import static javax.crypto.Cipher.SECRET_KEY;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RestController
@@ -28,6 +28,10 @@ import static javax.crypto.Cipher.SECRET_KEY;
 public class AccountController {
     @Autowired
     UserRepository db;
+
+    @Autowired
+    private FirebaseService firebase;
+
     PasswordEncoder passwordEndcoder = new BCryptPasswordEncoder();
 
     @Value("${default.application.avatar}")
@@ -108,17 +112,33 @@ public class AccountController {
     public Package profile(@RequestHeader("Authorization") String token){
         try {
             Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
-            return new Package(0, "success", claims);
+            return new Package(0, "Retrieve the user’s information successfully", claims);
         } catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
     }
 
     @PatchMapping("/")
-    public Package updateProfile(){
-        try{
-            return new Package(0, "success", null);
-        }catch (Exception e){
+    public Package updateProfile(@RequestParam("username") String username,
+                                 @RequestParam("name") String name,
+                                 @RequestParam("file") MultipartFile multipartFile,
+                                 @RequestHeader("Authorization") String token){
+        try {
+            Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
+            UserModel user = db.findByUsername(username);
+            // Upload image to firebase return URL
+            String imageUrl = firebase.uploadImage(multipartFile);
+            if (!user.getImage().equals(imageUrl)) {
+                user.setImage(imageUrl);
+                db.save(user);
+                return new Package(0, "Update profile successfully", claims);
+            } else if (!user.getName().equals(name)) {
+                user.setName(name);
+                db.save(user);
+                return new Package(0, "Update profile successfully", claims);
+            }
+            return new Package(401, "Update profile failure", claims);
+        } catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
     }
@@ -161,5 +181,4 @@ public class AccountController {
             return false;
         }
     }
-
 }

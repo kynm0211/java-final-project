@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 public class PoSsystemApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(PoSsystemApplication.class, args);
 	}
 
