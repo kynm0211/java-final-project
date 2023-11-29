@@ -97,7 +97,7 @@ public class AccountController {
                     user.setPassword(passwordEndcoder.encode(newPassword));
                     UserModel result = db.save(user);
 
-                    return new Package(0, "Changing password successfully", securityModel(result));
+                    return new Package(0, "Changing password successfully", result);
                 } else {
                     return new Package(401, "Incorrect current password", null);
                 }
@@ -120,12 +120,13 @@ public class AccountController {
     }
 
     @PatchMapping("/")
-    public Package updateProfile(@RequestParam("username") String username,
-                                 @RequestParam("name") String name,
+    public Package updateProfile(@RequestParam("name") String name,
                                  @RequestParam("file") MultipartFile multipartFile,
                                  @RequestHeader("Authorization") String token){
         try {
             Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
+            String username = claims.get("username", String.class);
+
             UserModel user = db.findByUsername(username);
             // Upload image to firebase return URL
             String imageUrl = firebase.uploadImage(multipartFile);
@@ -135,7 +136,7 @@ public class AccountController {
                 if (!user.getName().equals(name))
                     user.setName(name);
                 UserModel result = db.save(user);
-                return new Package(0, "Update profile successfully", securityModel(result));
+                return new Package(0, "Update profile successfully", result);
             }
             return new Package(401, "Update profile failure", claims);
         } catch (Exception e){
@@ -159,21 +160,6 @@ public class AccountController {
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
-    }
-
-    public static Object securityModel(UserModel user) {
-        Object data = new Object() {
-            public final String _id = user.getId();
-            public final String _user = user.getUsername();
-            public final String _name = user.getName();
-            public final String _email = user.getEmail();
-            public final String _img = user.getImage();
-            public final String _role = user.getRole();
-            public final String _sts = user.getStatus();
-            public final LocalDateTime _at = user.getCreated_at();
-        };
-
-        return data;
     }
 
     public static String generateToken(UserModel user) {

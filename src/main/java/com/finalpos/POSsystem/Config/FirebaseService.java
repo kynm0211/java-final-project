@@ -1,11 +1,12 @@
 package com.finalpos.POSsystem.Config;
-
+import org.apache.commons.io.FilenameUtils;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.FileInputStream;
@@ -16,7 +17,9 @@ import com.google.cloud.storage.BlobInfo;
 @Service
 public class FirebaseService {
     private static final String SERVICE_ACCOUNT = "./src/main/resources/serviceAccountKey.json";
-    private static final String BUCKET_NAME = "web-spring-boot-cba58.appspot.com";
+
+    @Value("${BUCKET_NAME}")
+    private String BUCKET_NAME;
     private static Storage storage;
 
     @PostConstruct
@@ -41,8 +44,9 @@ public class FirebaseService {
         BlobId blobId = BlobId.of(BUCKET_NAME, "profile/" + imageName);
 
         // Upload the image to Firebase Storage
+        String extension = FilenameUtils.getExtension(imageName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-                .setContentType("image/png").build();
+                .setContentType("image/" + extension).build();
 
         storage.create(blobInfo, file.getBytes());
 
