@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RestController
@@ -121,28 +122,37 @@ public class AccountController {
 
     @PatchMapping("/")
     public Package updateProfile(@RequestParam("name") String name,
-                                 @RequestParam("file") MultipartFile multipartFile,
-                                 @RequestHeader("Authorization") String token){
+                                 @RequestParam("file") Optional<MultipartFile> multipartFile,
+                                 @RequestHeader("Authorization") String token) {
         try {
+            // Parse the authentication token to extract the username
             Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
             String username = claims.get("username", String.class);
 
+            // Retrieve the user's profile information from the database
             UserModel user = db.findByUsername(username);
-            // Upload image to firebase return URL
-            String imageUrl = firebase.uploadImage(multipartFile);
-            if (!user.getImage().equals(imageUrl) || !user.getName().equals(name)) {
-                if(!user.getImage().equals(imageUrl))
-                    user.setImage(imageUrl);
-                if (!user.getName().equals(name))
-                    user.setName(name);
-                UserModel result = db.save(user);
-                return new Package(0, "Update profile successfully", result);
+
+            // Update the image URL if necessary
+            if (multipartFile.isPresent()) {
+                String imageUrl = firebase.uploadImage(multipartFile.get());
+                user.setImage(imageUrl);
             }
-            return new Package(401, "Update profile failure", claims);
-        } catch (Exception e){
+
+            // Update the username if necessary
+            if (!user.getName().equals(name))
+                user.setName(name);
+
+            // Save the updated profile information
+            UserModel result = db.save(user);
+
+            // Return a success message with the updated user information
+            return new Package(0, "Update profile successfully", result);
+        } catch (Exception e) {
+            // Handle exceptions and return an appropriate error message
             return new Package(404, e.getMessage(), null);
         }
     }
+
 
     @PostMapping("/direct")
     public Package direct(){
