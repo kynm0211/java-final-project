@@ -4,10 +4,8 @@ import com.finalpos.POSsystem.Config.FirebaseService;
 import com.finalpos.POSsystem.Model.UserRepository;
 import com.finalpos.POSsystem.Model.*;
 import com.finalpos.POSsystem.Model.Package;
-import com.google.api.client.json.webtoken.JsonWebToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.security.Key;
-import java.time.LocalDateTime;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Controller
