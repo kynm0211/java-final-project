@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RestController
@@ -20,36 +21,40 @@ public class UsersController {
 
     @GetMapping("/")
     //    Get list of users
-    public Package index(@RequestParam("page") int page) {
+    public Package index(@RequestParam Optional<String> page) {
         try {
-            int pageSize, skipAmount, totalUsers, totalPages;
-            pageSize = 10;
-            skipAmount = (page - 1) * pageSize;
-            totalUsers = (int) db.count();
-            totalPages = (int) Math.ceil((double)totalUsers / pageSize);
+            int pageSize = 10;
+            int pageNumber = 1;
+            if(!page.isEmpty() && page.get() != "null") {
+                pageNumber = Integer.parseInt(page.get());
+            }
+            int skipAmount = (pageNumber - 1) * pageSize;
+            int totalUsers = (int) db.count();
+            int totalPages = (int) Math.ceil((double) totalUsers / pageSize);
 
             List<UserModel> userList = db.findAll();
             List<UserModel> user = new ArrayList<>();
 
-            // Check num of user in last page
+            // Check num of users in the last page
             // It will continue() when page + 1 (skipAmount > size()) -> reduce run time
-            if(skipAmount <= userList.size() - 1) {
-                for (int i = 0; i < userList.size(); i++) {
-                    if(i >= skipAmount && i < (skipAmount + 10)) {
-                        user.add(userList.get(i));
-                    }
-                }
+            int endIdx = Math.min(skipAmount + pageSize, userList.size());
+            for (int i = skipAmount; i < endIdx; i++) {
+                user.add(userList.get(i));
             }
+
             Object data = new Object() {
                 public final List<UserModel> users = user;
                 public final int devider = totalPages;
             };
             return new Package(0, "success", data);
         }
-        catch (Exception e){
+        catch (Exception e) {
             return new Package(404, e.getMessage(), null);
         }
     }
+
+
+
 
     @PostMapping("/register")
     public Package registerSale(){
@@ -72,8 +77,19 @@ public class UsersController {
     }
 
     @PutMapping("/{userId}")
-    public Package update(@PathVariable("userId") String userId){
+    public Package update(@PathVariable("userId") String userId,
+                          @RequestParam String email,
+                          @RequestParam String role,
+                          @RequestParam String status){
         try{
+            // Status: Active, InActive, Lock
+            // Role: Administrator, Sale Person
+            System.out.println(userId);
+            System.out.println(email);
+            System.out.println(role);
+            System.out.println(status);
+
+
             return new Package(0, "success", null);
         }
         catch (Exception e){

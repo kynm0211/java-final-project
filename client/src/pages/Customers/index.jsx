@@ -8,7 +8,7 @@ function Customers() {
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const page = queryParams.get('page');
+    const page = queryParams.get('page') || 1;
 
     
     const [search, setSearch] = useState("");

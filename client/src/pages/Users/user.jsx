@@ -14,7 +14,7 @@ function UserItem({ index, user }) {
   const handleEditModal = (user) => {
     $('#edit__img').attr('src', user.image);
     $('#nameOfUser').html(user.name);
-    $('#edit__id').val(user._id);
+    $('#edit__id').val(user.id);
     $('#edit__username').val(user.username);
     $('#edit__email').val(user.email);
     $('#edit__role').val(user.role);
@@ -26,7 +26,7 @@ function UserItem({ index, user }) {
   const handleDeleteModal = (user) => {
 
     $('#username-delete').text(user.name);
-    $('#id-delete').text(user._id);
+    $('#id-delete').text(user.id);
 
   }
   

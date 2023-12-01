@@ -5,14 +5,12 @@ import axios from 'axios';
 function EditModal({ refreshUsers }) {
   const user = {
     id: $('#edit__id').val(),
-    username: $('#edit__username').val(),
     email: $('#edit__email').val(),
     role: $('#edit__role').val(),
     status: $('#edit__status').val(),
   };
 
   const [userData, setUserData] = useState({
-    username: user.username,
     email: user.email,
     role: user.role,
     status: user.status,
@@ -28,16 +26,16 @@ function EditModal({ refreshUsers }) {
 
   const handleSaveChanges = () => {
     const updatedUser = {
-      username: userData.username,
-      email: userData.email,
-      role: userData.role,
-      status: userData.status,
+		email: $('#edit__email').val(),
+      	role: $('#edit__role').val(),
+      	status: $('#edit__status').val(),
     };
 
     axios
-      .put(`/api/users/${user.id}`, updatedUser, {
+      .put(`/api/users/${$('#edit__id').val()}`, updatedUser, {
         headers: {
           Authorization: localStorage.getItem('token'),
+		  "Content-Type": "application/x-www-form-urlencoded",
         },
       })
       .then((response) => {

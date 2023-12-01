@@ -12,7 +12,7 @@ function UserList() {
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const page = queryParams.get('page');
+    const page = queryParams.get('page') || 1;
 
 
     const [users, setUsers] = useState(null);
@@ -30,7 +30,7 @@ function UserList() {
     const fetchUsers = async () => {
         setLoading(false);
         setError(null);
-        axios.get('/api/users?page='+page, {
+        axios.get('/api/users/?page='+page, {
             headers: {
                 'Authorization': localStorage.getItem('token')
             }

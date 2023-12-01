@@ -8,7 +8,7 @@ function Products({AddToCart}) {
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const page = queryParams.get('page');
+    const page = queryParams.get('page') || 1;
 
     const [products, setProducts] = useState([]);
     const [divider, setDivider] = useState(1);

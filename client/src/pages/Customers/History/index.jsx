@@ -7,7 +7,7 @@ import Pagination from "../../../components/Pagination";
 function History() {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const page = queryParams.get('page');
+    const page = queryParams.get('page') || 1;
 
 
     const {id} = useParams();
