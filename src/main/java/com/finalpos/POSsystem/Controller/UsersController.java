@@ -4,11 +4,21 @@ import com.finalpos.POSsystem.Model.UserModel;
 import com.finalpos.POSsystem.Model.UserRepository;
 import com.finalpos.POSsystem.Model.Package;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
+
+import static com.finalpos.POSsystem.Controller.AccountController.generateToken;
 
 @Controller
 @RestController
@@ -18,6 +28,10 @@ import java.util.Optional;
 public class UsersController {
     @Autowired
     UserRepository db;
+    @Value("${default.application.avatar}")
+    private String defaultAvatar;
+
+    PasswordEncoder passwordEndcoder = new BCryptPasswordEncoder();
 
     @GetMapping("/")
     //    Get list of users
@@ -57,22 +71,94 @@ public class UsersController {
 
 
     @PostMapping("/register")
-    public Package registerSale(){
-        try{
-            return new Package(0, "success", null);
-        }
-        catch (Exception e){
+    public Package register(@RequestParam("name") String name,
+                            @RequestParam("email") String email) {
+        try {
+            String username = email.split("@")[0];
+
+            UserModel newUser = new UserModel();
+            newUser.setName(name);
+            newUser.setUsername(username);
+            newUser.setEmail(email);
+            newUser.setRole("User");
+            newUser.setImage(defaultAvatar);
+            newUser.setStatus("Active");
+            newUser.setCreated_at(java.time.LocalDateTime.now());
+
+            String defaultPassword = username;
+
+            newUser.setPassword(passwordEndcoder.encode(defaultPassword));
+
+            db.save(newUser);
+
+            String tokenString = generateToken(newUser);
+
+            Object data = new Object() {
+                public final String token = tokenString;
+                public final UserModel user = newUser;
+            };
+
+            sendRegistrationEmail(newUser, tokenString);
+
+            return new Package(0, "Registration success", data);
+        } catch (Exception e) {
             return new Package(404, e.getMessage(), null);
         }
     }
 
-    @PostMapping("resend")
-    public Package resend(){
-        try{
-            return new Package(0, "success", null);
+    private void sendRegistrationEmail(UserModel user, String token) {
+        try {
+            String stringSenderEmail = "vate202@gmail.com";
+            String stringReceiverEmail = user.getEmail();
+            String stringPasswordSenderEmail = "lktyqjjjbiyefldc";
+
+            String stringHost = "smtp.gmail.com";
+
+            Properties properties = System.getProperties();
+
+            properties.put("mail.smtp.host", stringHost);
+            properties.put("mail.smtp.port", "465");
+            properties.put("mail.smtp.ssl.enable", "true");
+            properties.put("mail.smtp.auth", "true");
+
+            javax.mail.Session session = Session.getInstance(properties, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(stringSenderEmail, stringPasswordSenderEmail);
+                }
+            });
+
+            MimeMessage mimeMessage = new MimeMessage(session);
+            mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(stringReceiverEmail));
+
+            mimeMessage.setSubject("Subject: Java App email");
+            mimeMessage.setText("Hello " + user.getName() + ",\n\nYour registration was successful. Welcome to the Programmer World!");
+
+            Transport.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
         }
-        catch (Exception e){
-            return new Package(404, e.getMessage(), null);
+    }
+
+
+
+    @PostMapping("/resend")
+    public Package resendEmail(@RequestParam("email") String email) {
+        try {
+            UserModel user = db.findByEmail(email);
+
+            if (user != null) {
+                String token = generateToken(user);
+
+                sendRegistrationEmail(user, token);
+
+                return new Package(0, "Resend email successfully", null);
+            } else {
+                return new Package(404, "User not found", null);
+            }
+        } catch (Exception e) {
+            return new Package(500, e.getMessage(), null);
         }
     }
 
