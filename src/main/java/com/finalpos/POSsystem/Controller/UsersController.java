@@ -53,9 +53,6 @@ public class UsersController {
         }
     }
 
-
-
-
     @PostMapping("/register")
     public Package registerSale(){
         try{
