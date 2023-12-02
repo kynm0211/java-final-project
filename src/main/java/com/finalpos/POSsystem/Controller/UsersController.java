@@ -81,16 +81,15 @@ public class UsersController {
                           @RequestParam String email,
                           @RequestParam String role,
                           @RequestParam String status){
-        try{
+        try {
             // Status: Active, InActive, Lock
             // Role: Administrator, Sale Person
-            System.out.println(userId);
-            System.out.println(email);
-            System.out.println(role);
-            System.out.println(status);
-
-
-            return new Package(0, "success", null);
+            UserModel userModel = db.findUserModelById(userId);
+            userModel.setEmail(email);
+            userModel.setRole(role);
+            userModel.setStatus(status);
+            UserModel updateUser = db.save(userModel);
+            return new Package(0, "success", updateUser);
         }
         catch (Exception e){
             return new Package(404, e.getMessage(), null);
@@ -99,8 +98,9 @@ public class UsersController {
 
     @DeleteMapping("/{userId}")
     public Package delete(@PathVariable("userId") String userId){
-        try{
-            return new Package(0, "success", null);
+        try {
+            UserModel removeUser = db.removeUserModelById(userId);
+            return new Package(0, "success", removeUser);
         }
         catch (Exception e){
             return new Package(404, e.getMessage(), null);
