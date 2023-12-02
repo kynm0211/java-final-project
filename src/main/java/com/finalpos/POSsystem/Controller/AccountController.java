@@ -1,20 +1,29 @@
 package com.finalpos.POSsystem.Controller;
 
-import com.finalpos.POSsystem.Config.FirebaseService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.finalpos.POSsystem.Model.UserRepository;
 import com.finalpos.POSsystem.Model.*;
 import com.finalpos.POSsystem.Model.Package;
+import com.mongodb.client.result.UpdateResult;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
+
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.security.Key;
-import java.util.Optional;
+import java.util.Properties;
+
+
+import static javax.crypto.Cipher.SECRET_KEY;
 
 @Controller
 @RestController
@@ -23,10 +32,6 @@ import java.util.Optional;
 public class AccountController {
     @Autowired
     UserRepository db;
-
-    @Autowired
-    private FirebaseService firebase;
-
     PasswordEncoder passwordEndcoder = new BCryptPasswordEncoder();
 
     @Value("${default.application.avatar}")
@@ -76,10 +81,10 @@ public class AccountController {
 
     @PostMapping("/change-password")
     public Package changePassword(
-                                  @RequestParam("currentPassword") String currentPassword,
-                                  @RequestParam("newPassword") String newPassword,
-                                  @RequestParam("confirmPassword") String confirmPassword,
-                                  @RequestHeader(name = "Authorization") String token){
+            @RequestParam("currentPassword") String currentPassword,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            @RequestHeader(name = "Authorization") String token){
         try{
             if (validateToken(token)) {
                 Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
@@ -107,45 +112,20 @@ public class AccountController {
     public Package profile(@RequestHeader("Authorization") String token){
         try {
             Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
-            return new Package(0, "Retrieve the user’s information successfully", claims);
+            return new Package(0, "success", claims);
         } catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
     }
 
     @PatchMapping("/")
-    public Package updateProfile(@RequestParam("name") String name,
-                                 @RequestParam("file") Optional<MultipartFile> multipartFile,
-                                 @RequestHeader("Authorization") String token) {
-        try {
-            // Parse the authentication token to extract the username
-            Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
-            String username = claims.get("username", String.class);
-
-            // Retrieve the user's profile information from the database
-            UserModel user = db.findByUsername(username);
-
-            // Update the image URL if necessary
-            if (multipartFile.isPresent()) {
-                String imageUrl = firebase.uploadImage(multipartFile.get());
-                user.setImage(imageUrl);
-            }
-
-            // Update the username if necessary
-            if (!user.getName().equals(name))
-                user.setName(name);
-
-            // Save the updated profile information
-            UserModel result = db.save(user);
-
-            // Return a success message with the updated user information
-            return new Package(0, "Update profile successfully", result);
-        } catch (Exception e) {
-            // Handle exceptions and return an appropriate error message
+    public Package updateProfile(){
+        try{
+            return new Package(0, "success", null);
+        }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
     }
-
 
     @PostMapping("/direct")
     public Package direct(){
@@ -162,6 +142,97 @@ public class AccountController {
             return new Package(0, "success", null);
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
+        }
+    }
+    @PostMapping("/register")
+    public Package register(@RequestParam("name") String name,
+                            @RequestParam("email") String email) {
+        try {
+            String username = email.split("@")[0];
+
+            UserModel newUser = new UserModel();
+            newUser.setName(name);
+            newUser.setUsername(username);
+            newUser.setEmail(email);
+            newUser.setRole("User");
+            newUser.setImage(defaultAvatar);
+            newUser.setStatus("Active");
+            newUser.setCreated_at(java.time.LocalDateTime.now());
+
+            String defaultPassword = username;
+
+            newUser.setPassword(passwordEndcoder.encode(defaultPassword));
+
+            db.save(newUser);
+
+            String tokenString = generateToken(newUser);
+
+            Object data = new Object() {
+                public final String token = tokenString;
+                public final UserModel user = newUser;
+            };
+
+            sendRegistrationEmail(newUser, tokenString);
+
+            return new Package(0, "Registration success", data);
+        } catch (Exception e) {
+            return new Package(404, e.getMessage(), null);
+        }
+    }
+
+    private void sendRegistrationEmail(UserModel user, String token) {
+        try {
+            String stringSenderEmail = "vate202@gmail.com";
+            String stringReceiverEmail = user.getEmail();
+            String stringPasswordSenderEmail = "lktyqjjjbiyefldc";
+
+            String stringHost = "smtp.gmail.com";
+
+            Properties properties = System.getProperties();
+
+            properties.put("mail.smtp.host", stringHost);
+            properties.put("mail.smtp.port", "465");
+            properties.put("mail.smtp.ssl.enable", "true");
+            properties.put("mail.smtp.auth", "true");
+
+            javax.mail.Session session = Session.getInstance(properties, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(stringSenderEmail, stringPasswordSenderEmail);
+                }
+            });
+
+            MimeMessage mimeMessage = new MimeMessage(session);
+            mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(stringReceiverEmail));
+
+            mimeMessage.setSubject("Subject: Java App email");
+            mimeMessage.setText("Hello " + user.getName() + ",\n\nYour registration was successful. Welcome to the Programmer World!");
+
+            Transport.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    @PostMapping("/resend")
+    public Package resendEmail(@RequestParam("email") String email) {
+        try {
+            UserModel user = db.findByEmail(email);
+
+            if (user != null) {
+                String token = generateToken(user);
+
+                sendRegistrationEmail(user, token);
+
+                return new Package(0, "Resend email successfully", null);
+            } else {
+                return new Package(404, "User not found", null);
+            }
+        } catch (Exception e) {
+            return new Package(500, e.getMessage(), null);
         }
     }
 
@@ -185,4 +256,5 @@ public class AccountController {
             return false;
         }
     }
+
 }
