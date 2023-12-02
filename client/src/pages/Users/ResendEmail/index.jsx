@@ -21,6 +21,7 @@ function ResendEmail() {
         axios.post('/api/users/resend',user, {
             headers: {
                 'Authorization': localStorage.getItem('token'),
+                "Content-Type": "application/x-www-form-urlencoded"
             }
         })
             .then(respone => {
@@ -34,7 +35,7 @@ function ResendEmail() {
                 setStatus(false);
             })
             .catch(err => {
-                setError(error);
+                setError(error.message);
             });
     }
     return ( 

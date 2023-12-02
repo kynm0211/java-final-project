@@ -129,7 +129,7 @@ function EditModal({ refreshUsers }) {
                     onChange={handleInputChange}
                   >
                     <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="InActive">InActive</option>
                     <option value="Lock">Lock</option>
                   </select>
                 </div>

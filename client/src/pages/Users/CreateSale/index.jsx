@@ -17,15 +17,10 @@ export const CreateSale = (props) => {
         setErorr(null);
         setCreated(false);
 
-
-        const userData = {
-            name: name,
-            email: email
-        };
-
-        axios.post('/api/users/register', userData, {
+        axios.post('/api/users/register', {name, email}, {
             headers: { 
                 'Authorization': localStorage.getItem('token'),
+                "Content-Type": "application/x-www-form-urlencoded"
             }
         })
             .then(response => {
@@ -40,8 +35,8 @@ export const CreateSale = (props) => {
                 setLoading(false);
             })
             .catch(error => {
-                setErorr(error);
-                setLoading(true);
+                setErorr(error.message);
+                setLoading(false);
             });
     }
     return (

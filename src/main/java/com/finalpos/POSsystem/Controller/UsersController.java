@@ -3,6 +3,8 @@ package com.finalpos.POSsystem.Controller;
 import com.finalpos.POSsystem.Model.UserModel;
 import com.finalpos.POSsystem.Model.UserRepository;
 import com.finalpos.POSsystem.Model.Package;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,12 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
-import static com.finalpos.POSsystem.Controller.AccountController.generateToken;
+import static com.finalpos.POSsystem.Controller.AccountController.JWT_Key;
+
 
 @Controller
 @RestController
@@ -32,6 +32,9 @@ public class UsersController {
     private String defaultAvatar;
 
     PasswordEncoder passwordEndcoder = new BCryptPasswordEncoder();
+
+    @Value("${default.application.SERVER_ADDRESS}")
+    private String SERVER_ADDRESS;
 
     @GetMapping("/")
     //    Get list of users
@@ -71,73 +74,35 @@ public class UsersController {
     public Package register(@RequestParam("name") String name,
                             @RequestParam("email") String email) {
         try {
+            // Forgot check email formart
+
             String username = email.split("@")[0];
 
             UserModel newUser = new UserModel();
             newUser.setName(name);
             newUser.setUsername(username);
             newUser.setEmail(email);
-            newUser.setRole("User");
+            newUser.setRole("Sale Person");
             newUser.setImage(defaultAvatar);
-            newUser.setStatus("Active");
+            newUser.setStatus("InActive");
             newUser.setCreated_at(java.time.LocalDateTime.now());
 
             String defaultPassword = username;
 
             newUser.setPassword(passwordEndcoder.encode(defaultPassword));
 
-            db.save(newUser);
+
 
             String tokenString = generateToken(newUser);
 
-            Object data = new Object() {
-                public final String token = tokenString;
-                public final UserModel user = newUser;
-            };
-
             sendRegistrationEmail(newUser, tokenString);
+            db.save(newUser);
 
-            return new Package(0, "Registration success", data);
+            return new Package(0, "Registration success", newUser);
         } catch (Exception e) {
             return new Package(404, e.getMessage(), null);
         }
     }
-
-    private void sendRegistrationEmail(UserModel user, String token) {
-        try {
-            String stringSenderEmail = "vate202@gmail.com";
-            String stringReceiverEmail = user.getEmail();
-            String stringPasswordSenderEmail = "lktyqjjjbiyefldc";
-
-            String stringHost = "smtp.gmail.com";
-
-            Properties properties = System.getProperties();
-
-            properties.put("mail.smtp.host", stringHost);
-            properties.put("mail.smtp.port", "465");
-            properties.put("mail.smtp.ssl.enable", "true");
-            properties.put("mail.smtp.auth", "true");
-
-            javax.mail.Session session = Session.getInstance(properties, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(stringSenderEmail, stringPasswordSenderEmail);
-                }
-            });
-
-            MimeMessage mimeMessage = new MimeMessage(session);
-            mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(stringReceiverEmail));
-
-            mimeMessage.setSubject("Subject: Java App email");
-            mimeMessage.setText("Hello " + user.getName() + ",\n\nYour registration was successful. Welcome to the Programmer World!");
-
-            Transport.send(mimeMessage);
-
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-    }
-
 
 
     @PostMapping("/resend")
@@ -146,10 +111,11 @@ public class UsersController {
             UserModel user = db.findByEmail(email);
 
             if (user != null) {
+                user.setStatus("InActive");
                 String token = generateToken(user);
 
                 sendRegistrationEmail(user, token);
-
+                db.save(user);
                 return new Package(0, "Resend email successfully", null);
             } else {
                 return new Package(404, "User not found", null);
@@ -188,5 +154,57 @@ public class UsersController {
         catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
+    }
+
+    private void sendRegistrationEmail(UserModel user, String token) {
+        try {
+            String stringSenderEmail = "vate202@gmail.com";
+            String stringReceiverEmail = user.getEmail();
+            String stringPasswordSenderEmail = "lktyqjjjbiyefldc";
+
+            String stringHost = "smtp.gmail.com";
+
+            Properties properties = System.getProperties();
+
+            properties.put("mail.smtp.host", stringHost);
+            properties.put("mail.smtp.port", "465");
+            properties.put("mail.smtp.ssl.enable", "true");
+            properties.put("mail.smtp.auth", "true");
+
+            javax.mail.Session session = Session.getInstance(properties, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(stringSenderEmail, stringPasswordSenderEmail);
+                }
+            });
+
+            MimeMessage mimeMessage = new MimeMessage(session);
+            mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(stringReceiverEmail));
+
+            mimeMessage.setSubject("Subject: Java App email");
+            mimeMessage.setText("Hello " + user.getName() + ",\n\nYour registration was successful. Welcome to the Programmer World!"
+            + "\n\nPlease click the link below to activate your account:\n"
+                    + SERVER_ADDRESS+"direct/?token=" + token
+                    + "\n\nThank you,\nJava App Team");
+
+            Transport.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String generateToken(UserModel user) {
+        Date expirationTime = new Date(System.currentTimeMillis() + 60000);
+        return Jwts.builder()
+                .claim("username", user.getUsername())
+                .claim("name", user.getName())
+                .claim("email", user.getEmail())
+                .claim("image", user.getImage())
+                .claim("role", user.getRole())
+                .claim("status", user.getStatus())
+                .setExpiration(expirationTime)
+                .signWith(SignatureAlgorithm.HS256, JWT_Key)
+                .compact();
     }
 }

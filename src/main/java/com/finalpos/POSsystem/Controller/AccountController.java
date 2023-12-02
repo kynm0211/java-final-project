@@ -20,6 +20,7 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.security.Key;
+import java.util.Date;
 import java.util.Properties;
 
 
@@ -37,7 +38,7 @@ public class AccountController {
     @Value("${default.application.avatar}")
     private String defaultAvatar;
 
-    private static Key JWT_Key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    protected static Key JWT_Key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     @PostMapping("/register_admin")
 
@@ -63,6 +64,9 @@ public class AccountController {
         try {
             UserModel userDB = db.findByUsername(username);
             if (userDB != null && passwordEndcoder.matches(password, userDB.getPassword())) {
+                if(userDB.getStatus().equals("InActive")){
+                    return new Package(401, "Your account is inactive", null);
+                }
                 String tokenString = generateToken(userDB);
 
                 userDB.setPassword(null);
@@ -147,6 +151,7 @@ public class AccountController {
 
 
     public static String generateToken(UserModel user) {
+        Date expirationTime = new Date(System.currentTimeMillis() + 3600000);
         return Jwts.builder()
                 .claim("username", user.getUsername())
                 .claim("name", user.getName())
@@ -154,6 +159,7 @@ public class AccountController {
                 .claim("image", user.getImage())
                 .claim("role", user.getRole())
                 .claim("status", user.getStatus())
+                .setExpiration(expirationTime)
                 .signWith(SignatureAlgorithm.HS256, JWT_Key)
                 .compact();
     }
