@@ -12,7 +12,7 @@ function EditModal({ refreshUsers }) {
 
   const [userData, setUserData] = useState({
     email: user.email,
-    role: user.role,
+    role: $('#edit__role').val(),
     status: user.status,
   });
 
@@ -26,7 +26,7 @@ function EditModal({ refreshUsers }) {
 
   const handleSaveChanges = () => {
     const updatedUser = {
-		email: $('#edit__email').val(),
+		    email: $('#edit__email').val(),
       	role: $('#edit__role').val(),
       	status: $('#edit__status').val(),
     };

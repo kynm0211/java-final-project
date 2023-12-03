@@ -49,6 +49,7 @@ public class UsersController {
             int totalUsers = (int) db.count();
             int totalPages = (int) Math.ceil((double) totalUsers / pageSize);
 
+
             List<UserModel> userList = db.findAll();
             List<UserModel> user = new ArrayList<>();
 
@@ -61,7 +62,7 @@ public class UsersController {
 
             Object data = new Object() {
                 public final List<UserModel> users = user;
-                public final int devider = totalPages;
+                public final int divider = totalPages;
             };
             return new Package(0, "success", data);
         }
@@ -82,7 +83,7 @@ public class UsersController {
             newUser.setName(name);
             newUser.setUsername(username);
             newUser.setEmail(email);
-            newUser.setRole("Sale Person");
+            newUser.setRole("Sale person");
             newUser.setImage(defaultAvatar);
             newUser.setStatus("InActive");
             newUser.setCreated_at(java.time.LocalDateTime.now());
