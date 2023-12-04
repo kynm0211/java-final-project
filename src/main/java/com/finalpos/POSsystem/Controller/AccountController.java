@@ -2,6 +2,7 @@ package com.finalpos.POSsystem.Controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.finalpos.POSsystem.Config.FirebaseService;
 import com.finalpos.POSsystem.Model.UserRepository;
 import com.finalpos.POSsystem.Model.*;
 import com.finalpos.POSsystem.Model.Package;
@@ -15,12 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.security.Key;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Properties;
 
 
@@ -34,7 +37,8 @@ public class AccountController {
     @Autowired
     UserRepository db;
     PasswordEncoder passwordEndcoder = new BCryptPasswordEncoder();
-
+    @Autowired
+    private FirebaseService firebase;
     @Value("${default.application.avatar}")
     private String defaultAvatar;
 
@@ -44,7 +48,6 @@ public class AccountController {
 
     public Package register_admin(@RequestBody UserModel model) {
         try{
-            System.out.println(model);
             model.setRole("Administrator");
             model.setImage(defaultAvatar);
             model.setStatus("Active");
@@ -123,9 +126,27 @@ public class AccountController {
     }
 
     @PatchMapping("/")
-    public Package updateProfile(){
-        try{
-            return new Package(0, "success", null);
+    public Package updateProfile(@RequestParam("name") String name,
+                                 @RequestParam("file") Optional<MultipartFile> multipartFile,
+                                 @RequestHeader("Authorization") String token) {
+        try {
+            // Parse the authentication token to extract the username
+            Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
+            String username = claims.get("username", String.class);
+            // Retrieve the user's profile information from the database
+            UserModel user = db.findByUsername(username);
+            // Update the image URL if necessary
+            if (multipartFile.isPresent()) {
+                String imageUrl = firebase.uploadImage(multipartFile.get());
+                user.setImage(imageUrl);
+            }
+            // Update the username if necessary
+            if (!user.getName().equals(name))
+                user.setName(name);
+            // Save the updated profile information
+            UserModel result = db.save(user);
+            // Return a success message with the updated user information
+            return new Package(0, "Update profile successfully", result);
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
