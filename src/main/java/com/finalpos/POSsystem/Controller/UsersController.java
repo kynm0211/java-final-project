@@ -16,6 +16,8 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.finalpos.POSsystem.Controller.AccountController.JWT_Key;
 
@@ -35,6 +37,10 @@ public class UsersController {
 
     @Value("${default.application.SERVER_ADDRESS}")
     private String SERVER_ADDRESS;
+
+    private static final String EMAIL_REGEX =
+            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+
 
     @GetMapping("/")
     //    Get list of users
@@ -74,9 +80,13 @@ public class UsersController {
     @PostMapping("/register")
     public Package register(@RequestParam("name") String name,
                             @RequestParam("email") String email) {
+        if (!isValidEmail(email)) {
+            return new Package(400, "Invalid email format", null);
+        }
+        if (db.findByEmail(email) != null) {
+            return new Package(400, "Email already exist", null);
+        }
         try {
-            // Forgot check email formart
-
             String username = email.split("@")[0];
 
             UserModel newUser = new UserModel();
@@ -193,6 +203,11 @@ public class UsersController {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+    private boolean isValidEmail(String email) {
+        Pattern pattern = Pattern.compile(EMAIL_REGEX);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     private String generateToken(UserModel user) {
