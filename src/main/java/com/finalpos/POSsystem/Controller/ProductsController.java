@@ -113,8 +113,18 @@ public class ProductsController {
 
     @DeleteMapping("/{barcode}")
     public Package delete(@PathVariable("barcode") String barcode){
-        try{
-            return new Package(0, "success", null);
+        try {
+            ProductModel product = db.findByBarcode(barcode);
+            if(product != null) {
+                if(!product.getPurchase()) {
+                    ProductModel result = db.removeProductModelByBarcode(barcode);
+                    return new Package(0, "Product deleted successfully", result);
+                } else {
+                    return new Package(2, "Product was purchased", null);
+                }
+            } else {
+                return new Package(404, "Product not found", null);
+            }
         }
         catch (Exception e){
             return new Package(404, e.getMessage(), null);
