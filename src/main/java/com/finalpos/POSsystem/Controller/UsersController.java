@@ -102,8 +102,6 @@ public class UsersController {
 
             newUser.setPassword(passwordEndcoder.encode(defaultPassword));
 
-
-
             String tokenString = generateToken(newUser);
 
             sendRegistrationEmail(newUser, tokenString);

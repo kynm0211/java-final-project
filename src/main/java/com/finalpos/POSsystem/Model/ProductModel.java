@@ -12,12 +12,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 @ToString
 public class ProductModel {
-
     @Id
     private String id;
     @Indexed(unique = true)
     private String barcode;
-
     private String name;
     private int quantity;
     private String description;
