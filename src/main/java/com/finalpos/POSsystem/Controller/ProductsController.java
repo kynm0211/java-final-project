@@ -3,12 +3,15 @@ package com.finalpos.POSsystem.Controller;
 import com.finalpos.POSsystem.Config.FirebaseService;
 import com.finalpos.POSsystem.Model.ProductModel;
 import com.finalpos.POSsystem.Model.ProductRepository;
+import com.finalpos.POSsystem.Model.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import com.finalpos.POSsystem.Model.Package;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -24,10 +27,31 @@ public class ProductsController {
 
     @GetMapping("/")
     public Package index(@RequestParam Optional<String> page) {
-        try{
-            return new Package(0, "success", null);
+        try {
+            int pageSize = 10;
+            int pageNumber = 1;
+            if(!page.isEmpty() && page.get() != "null") {
+                pageNumber = Integer.parseInt(page.get());
+            }
+            int skipAmount = (pageNumber - 1) * pageSize;
+            int totalUsers = (int) db.count();
+            int totalPages = (int) Math.ceil((double) totalUsers / pageSize);
+
+            List<ProductModel> productModelList = db.findAll();
+            List<ProductModel> product = new ArrayList<>();
+
+            int endIdx = Math.min(skipAmount + pageSize, productModelList.size());
+            for (int i = skipAmount; i < endIdx; i++) {
+                product.add(productModelList.get(i));
+            }
+
+            Object data = new Object() {
+                public final List<ProductModel> products = product;
+                public final int divider = totalPages;
+            };
+            return new Package(0, "success", data);
         }
-        catch (Exception e){
+        catch (Exception e) {
             return new Package(404, e.getMessage(), null);
         }
     }
@@ -83,30 +107,75 @@ public class ProductsController {
 
     @GetMapping("/{barcode}")
     public Package get(@PathVariable("barcode") String barcode){
-        try{
-            return new Package(0, "success", null);
-        }
-        catch (Exception e){
+        try {
+            ProductModel product = db.findByBarcode(barcode);
+
+            if (product != null) {
+                Object data = new Object() {
+                    public final ProductModel Product = product;
+                };
+
+                return new Package(0, "Success", data);
+            } else {
+                return new Package(404, "Product not found", null);
+            }
+        } catch (Exception e) {
             return new Package(404, e.getMessage(), null);
         }
     }
 
     @PutMapping("/{barcode}")
-    public Package update(@PathVariable("barcode") String barcode){
-        try{
-            return new Package(0, "success", null);
-        }
-        catch (Exception e){
+    public Package update(@PathVariable("barcode") String barcode,
+                          @RequestParam("name") String name,
+                          @RequestParam("quantity") int quantity,
+                          @RequestParam("description") String description) {
+        try {
+            if (name.isEmpty() || description.isEmpty()) {
+                return new Package(404, "Name and description cannot be empty", null);
+            }
+
+            ProductModel existingProduct = db.findByBarcode(barcode);
+
+            if (existingProduct != null) {
+                existingProduct.setName(name);
+                existingProduct.setQuantity(quantity);
+                existingProduct.setDescription(description);
+
+                db.save(existingProduct);
+
+                Object data = new Object() {
+                    public final ProductModel product = existingProduct;
+                };
+
+                return new Package(0, "Success", data);
+            } else {
+                return new Package(404, "Product not found", null);
+            }
+        } catch (Exception e) {
             return new Package(404, e.getMessage(), null);
         }
     }
 
     @PatchMapping("/{barcode}")
-    public Package updatePatch(@PathVariable("barcode") String barcode){
-        try{
-            return new Package(0, "success", null);
-        }
-        catch (Exception e){
+    public Package updatePatch(@PathVariable("barcode") String barcode,
+                               @RequestParam("quantity") int amount){
+        try {
+            ProductModel product = db.findByBarcode(barcode);
+
+            if (product != null) {
+                product.setQuantity(amount);
+
+                db.save(product);
+
+                Object data = new Object() {
+                    public final ProductModel Product = product;
+                };
+
+                return new Package(0, "Update product successfully", data);
+            } else {
+                return new Package(404, "Product not found", null);
+            }
+        } catch (Exception e) {
             return new Package(404, e.getMessage(), null);
         }
     }

@@ -24,7 +24,7 @@ function ProductListAdmin() {
 
     const fetchProducts = async () => {
         setLoading(false);
-        axios.get('/api/products?page='+page, {
+        axios.get('/api/products/?page='+page, {
             headers: {
                 'Authorization': localStorage.getItem('token')
             }
