@@ -111,11 +111,7 @@ public class ProductsController {
             ProductModel product = db.findByBarcode(barcode);
 
             if (product != null) {
-                Object data = new Object() {
-                    public final ProductModel Product = product;
-                };
-
-                return new Package(0, "Success", data);
+                return new Package(0, "Success", product);
             } else {
                 return new Package(404, "Product not found", null);
             }
@@ -143,11 +139,7 @@ public class ProductsController {
 
                 db.save(existingProduct);
 
-                Object data = new Object() {
-                    public final ProductModel product = existingProduct;
-                };
-
-                return new Package(0, "Success", data);
+                return new Package(0, "Success", existingProduct);
             } else {
                 return new Package(404, "Product not found", null);
             }
@@ -158,20 +150,16 @@ public class ProductsController {
 
     @PatchMapping("/{barcode}")
     public Package updatePatch(@PathVariable("barcode") String barcode,
-                               @RequestParam("quantity") int amount){
+                               @RequestParam("amount") int amount){
         try {
             ProductModel product = db.findByBarcode(barcode);
 
             if (product != null) {
-                product.setQuantity(amount);
+                product.setQuantity(product.getQuantity()+amount);
 
                 db.save(product);
 
-                Object data = new Object() {
-                    public final ProductModel Product = product;
-                };
-
-                return new Package(0, "Update product successfully", data);
+                return new Package(0, "Update product successfully", product);
             } else {
                 return new Package(404, "Product not found", null);
             }

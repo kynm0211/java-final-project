@@ -40,7 +40,8 @@ function AddNew() {
         try {
           const response = await axios.post("/api/products/add", product, {
             headers: {
-              'Authorization': localStorage.getItem('token')
+              'Authorization': localStorage.getItem('token'),
+              "Content-Type": "multipart/form-data",
             }
           });
           const res = response.data;

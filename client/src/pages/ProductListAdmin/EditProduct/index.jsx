@@ -55,7 +55,8 @@ function EditProduct() {
     const handleSave = () => {
         axios.put(`/api/products/${barcode}`, editedProduct, {
           headers: {
-            'Authorization': localStorage.getItem('token')
+            'Authorization': localStorage.getItem('token'),
+            "Content-Type": "application/x-www-form-urlencoded"
           }
         })
         .then(response => {

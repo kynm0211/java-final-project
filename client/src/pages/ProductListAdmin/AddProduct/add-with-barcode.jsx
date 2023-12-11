@@ -51,6 +51,7 @@ function AddwBarcode() {
         axios.patch('/api/products/' + barcode, { amount }, {
             headers: {
                 'Authorization': localStorage.getItem('token'),
+                "Content-Type": "application/x-www-form-urlencoded"
             }
         })
             .then(response => {
