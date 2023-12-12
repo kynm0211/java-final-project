@@ -12,7 +12,7 @@ import com.finalpos.POSsystem.Model.Package;
 @RequestMapping("/api/pos")
 public class POSController {
 
-    
+
     @GetMapping("/find-customer/{phone}") // An Nguyen
     private Package findCustomerByPhone(@PathVariable("phone") String phone){
         try {
