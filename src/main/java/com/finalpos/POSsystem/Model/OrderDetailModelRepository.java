@@ -1,4 +1,6 @@
 package com.finalpos.POSsystem.Model;
 
-public interface OrderDetailModelRepository extends MongoRepository<OrderDetailModel, String>{
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface OrderDetailModelRepository extends MongoRepository<OrderDetailModel, String> {
 }
