@@ -23,7 +23,7 @@ function Products({AddToCart}) {
     const handleFetchProducts = async () => {
         setError(null);
         setLoading(true);
-        axios.get('/api/products?page='+page, {
+        axios.get('/api/products/?page='+page, {
             headers: {
                 'Authorization': localStorage.getItem('token')
             }

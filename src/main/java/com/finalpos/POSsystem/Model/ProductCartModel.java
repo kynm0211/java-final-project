@@ -2,6 +2,7 @@ package com.finalpos.POSsystem.Model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -13,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class ProductCartModel {
     @Id
     private String id;
+    @DBRef
     private String barcode;
     private String name;
     private int quantity;

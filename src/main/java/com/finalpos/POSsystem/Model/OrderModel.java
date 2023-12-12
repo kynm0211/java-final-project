@@ -2,6 +2,7 @@ package com.finalpos.POSsystem.Model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -14,7 +15,9 @@ public class OrderModel {
     @Id
     private String id;
     private String order_number;
+    @DBRef
     private String customer_id;
+    @DBRef
     private String staff_id;
 
     private int taxrate;
