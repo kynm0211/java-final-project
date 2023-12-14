@@ -2,6 +2,7 @@ package com.finalpos.POSsystem.Model;
 
 import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -18,8 +19,12 @@ public class CustomerModel {
     private String name;
     private String phone;
     private String address;
+    private String image;
 
-    @Value("${default.application.avatar}")
-    private String defaultAvatar;
-    private String image = defaultAvatar;
+    public CustomerModel(String name, String phone, String address,String url) {
+        this.name = name;
+        this.phone = phone;
+        this.address = address;
+        this.image = url;
+    }
 }

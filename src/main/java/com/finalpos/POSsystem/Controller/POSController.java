@@ -1,22 +1,36 @@
 package com.finalpos.POSsystem.Controller;
 
+import com.finalpos.POSsystem.Model.*;
+import com.finalpos.POSsystem.Model.Package;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import com.finalpos.POSsystem.Model.Package;
+
+import java.util.List;
+
 @Controller
 @RestController
 @ResponseBody
 @RequestMapping("/api/pos")
 public class POSController {
-
-
+    @Value("${default.application.avatar}")
+    private String url;
+    @Autowired
+    CustomerRepository cusDb;
+    @Autowired
+    ProductRepository proDb;
     @GetMapping("/find-customer/{phone}") // An Nguyen
     private Package findCustomerByPhone(@PathVariable("phone") String phone){
         try {
-            return new Package(0, "success", null);
+            CustomerModel customer = cusDb.findByPhone(phone);
+            if (customer != null) {
+                return new Package(0, "User exist",customer);
+            } else
+                return new Package(0, "User not exist",customer);
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
@@ -27,7 +41,14 @@ public class POSController {
                                    @RequestParam String name,
                                    @RequestParam String address){
         try {
-            return new Package(0, "success", null);
+            CustomerModel customerModel = new CustomerModel(name,phone,address,url);
+
+            if (cusDb.findByPhone(phone) != null) {
+                return new Package(0, "User exist", customerModel);
+            } else {
+                cusDb.save(customerModel);
+                return new Package(0, "success", customerModel);
+            }
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
@@ -46,7 +67,13 @@ public class POSController {
     @GetMapping("/search-product/{barcode}") // An Nguyen
     private Package searchProduct(@PathVariable("barcode") String barcode){
         try {
-            return new Package(0, "success", null);
+            ProductModel product = proDb.findByBarcode(barcode);
+
+            if (product != null) {
+                return new Package(0, "Success", product);
+            } else {
+                return new Package(404, "Product not found", null);
+            }
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
@@ -55,7 +82,8 @@ public class POSController {
     @GetMapping("/search-products") // An Nguyen
     private Package searchProducts(@RequestParam("terms") String terms){
         try {
-            return new Package(0, "success", null);
+            List<ProductModel> productModelList = proDb.findByTerm(terms);
+            return new Package(0, "success", productModelList);
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
