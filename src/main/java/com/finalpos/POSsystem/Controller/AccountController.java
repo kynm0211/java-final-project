@@ -174,6 +174,7 @@ public class AccountController {
     public static String generateToken(UserModel user) {
         Date expirationTime = new Date(System.currentTimeMillis() + 3600000);
         return Jwts.builder()
+                .claim("_id", user.getId())
                 .claim("username", user.getUsername())
                 .claim("name", user.getName())
                 .claim("email", user.getEmail())

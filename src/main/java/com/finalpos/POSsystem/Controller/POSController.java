@@ -1,9 +1,7 @@
 package com.finalpos.POSsystem.Controller;
 
-<<<<<<< Updated upstream
 import com.finalpos.POSsystem.Model.*;
 import com.finalpos.POSsystem.Model.Package;
-=======
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.finalpos.POSsystem.Model.*;
 import com.finalpos.POSsystem.Model.Package;
@@ -17,51 +15,36 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
->>>>>>> Stashed changes
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
-<<<<<<< Updated upstream
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-=======
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.*;
-
->>>>>>> Stashed changes
-
+import static com.finalpos.POSsystem.Controller.AccountController.JWT_Key;
 @Controller
 @RestController
 @ResponseBody
 @RequestMapping("/api/pos")
 public class POSController {
-<<<<<<< Updated upstream
     @Value("${default.application.avatar}")
     private String url;
     @Autowired
     CustomerRepository cusDb;
-    @Autowired
     ProductRepository proDb;
-=======
-
-    @Autowired
     CustomerRepository db1;
-
-    @Autowired
     UserRepository db2;
-
-    @Autowired
     ProductRepository db3;
-    protected static Key JWT_Key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
->>>>>>> Stashed changes
+
+    
     @GetMapping("/find-customer/{phone}") // An Nguyen
     private Package findCustomerByPhone(@PathVariable("phone") String phone){
         try {
@@ -96,51 +79,36 @@ public class POSController {
     @PostMapping("/create-a-bill") // Đạt
     private Object createABill(@RequestBody paymentModel payment){
         try {
-            // Get data from RequestBody
-            ObjectMapper mapper = new ObjectMapper();
+            System.out.println(payment.getToken());
 
-            // Customer session
-            Map<String, Object> map = mapper.readValue(mapper.writeValueAsString(payment.customer), Map.class);
-            CustomerModel customerModel = db1.findByPhone(map.get("phone").toString());
-            if(customerModel == null) {
-                if(!map.get("phone").toString().isEmpty() &&
-                    !map.get("name").toString().isEmpty() &&
-                    !map.get("address").toString().isEmpty()) {
-                    createCustomer(
-                            (String) map.get("phone"),
-                            (String) map.get("name"),
-                            (String) map.get("address")
-                    );
-                } else {
-                    return new Package(403, "The data of the customer is not valid", null);
-                }
-            }
+            Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(payment.getToken()).getBody();
+            String _id = claims.get("_id", String.class);
+            System.out.println("id: "+ _id);
 
-            // Cart session
-            List<Map<String, Object>> map3 = new ArrayList<>();
-            for(int i = 0; i < payment.cart.length; i++) {
-                Map<String, Object> map2 = mapper.readValue(mapper.writeValueAsString(payment.cart[i]), Map.class);
-                map3.add(map2);
-            }
-
-            // Staff session
-            String token = payment.token.trim();
-            try {
-                // Parse the token
-                SignedJWT signedJWT = SignedJWT.parse(token);
-
-                // Create a verifier with the secret key
-                JWSVerifier verifier = new MACVerifier(Keys.secretKeyFor(SignatureAlgorithm.HS512));
-
-                // Verify the signature
-                JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
-                Map<String, Object> map4 = mapper.readValue(mapper.writeValueAsString(claimsSet.toJSONObject()), Map.class);
-            } catch (Exception e) {
-                return new Package(404, "Error verifying the token", null);
-            }
             return new Package(0, "success", null);
-        }catch (Exception e){
-            return new Package(404, e.getMessage(), null);
+//            }
+//
+//            // Cart session
+//            List<Map<String, Object>> map3 = new ArrayList<>();
+//            for(int i = 0; i < payment.cart.length; i++) {
+//                Map<String, Object> map2 = mapper.readValue(mapper.writeValueAsString(payment.cart[i]), Map.class);
+//                map3.add(map2);
+//            }
+//
+//            // Staff session
+//            String token = payment.token.trim();
+//            try {
+//                // Parse the token
+//                SignedJWT signedJWT = SignedJWT.parse(token);
+//
+//                // Create a verifier with the secret key
+//                JWSVerifier verifier = new MACVerifier(Keys.secretKeyFor(SignatureAlgorithm.HS512));
+//
+//                // Verify the signature
+//                JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
+//                Map<String, Object> map4 = mapper.readValue(mapper.writeValueAsString(claimsSet.toJSONObject()), Map.class);
+        } catch (Exception e) {
+            return new Package(404, "Error verifying the token", null);
         }
     }
 

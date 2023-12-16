@@ -15,9 +15,7 @@ public class OrderModel {
     @Id
     private String id;
     private String order_number;
-    @DBRef
     private String customer_id;
-    @DBRef
     private String staff_id;
 
     private int taxrate;
