@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class ProductCartModel {
     @Id
     private String id;
-    @DBRef
     private String barcode;
     private String name;
     private int quantity;

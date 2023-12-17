@@ -17,17 +17,17 @@ import java.util.Optional;
 public class OrdersController {
     @Autowired
     OrderRepository orderDb;
+
     @GetMapping("/{order_number}") // Đạt
     private Package getOrderByOrderNumber(@PathVariable("order_number") String order_number){
         try {
-//            OrderModel orderModels = db.findByOrder_number(order_number);
-            return new Package(0, "success", null);
+            return new Package(0, "success", orderDb.findByOrderNumber(order_number));
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
     }
 
-    @GetMapping("/") // Đạt xong roi
+    @GetMapping("/") // Đạt
     private Package getAllOrders(){
         try {
             return new Package(0, "success", orderDb.findAll());

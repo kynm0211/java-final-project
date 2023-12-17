@@ -19,7 +19,9 @@ import java.util.Optional;
 public class CustomerController {
     @Autowired
     CustomerRepository cusDb;
-    
+
+    @Autowired
+    OrderRepository ordDb;
 
     @GetMapping("/")  // Đạt
     private Package getAllCustomers(@RequestParam Optional<String> page){
@@ -50,7 +52,7 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("/{id}") // Đạt xong roi
+    @GetMapping("/{id}") // Đạt
     private Package getCustomerById(@PathVariable("id") String id){
         try {
             Optional<CustomerModel> userModel = cusDb.findById(id);
@@ -63,8 +65,8 @@ public class CustomerController {
     @GetMapping("/{id}/transactions") // Đạt
     private Package getTransactionsByCustomerId(@PathVariable("id") String id){
         try {
-            return new Package(0, "success", null);
-
+            List<OrderModel> orderModels = ordDb.findByCustomerId(id);
+            return new Package(0, "success", orderModels);
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }

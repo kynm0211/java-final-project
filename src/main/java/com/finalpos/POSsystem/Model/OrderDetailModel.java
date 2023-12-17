@@ -15,11 +15,7 @@ import java.util.ArrayList;
 public class OrderDetailModel {
     @Id
     private String id;
-
     private String order_id;
-    @DBRef
     private String order_number;
-    @DBRef
     private ArrayList<ProductCartModel> products;
-
 }
