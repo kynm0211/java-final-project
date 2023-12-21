@@ -1,3 +1,4 @@
+
 import FindProducts from "./FindProducts";
 import Products from "./Products";
 import CardDetail from "./Cart";
@@ -8,20 +9,28 @@ import PaymentModal from "./Modal/PaymentModal";
 import InvoiceTab from "./Modal/PaymentComponents/InvoiceTab";
 function POS() {
 
+
+
     const [cart, setCart] = useState(0);
 
     const AddToCart = () => {
         setCart(cart + 1);
     }
 
+    const [products, setProducts] = useState([]);
+    const handleSearchProducts = (products) => {
+        setProducts(products);
+    }
+
+
     return ( 
         <Fragment>
             <div className="row">
                 <div className="col-md-8">
                     {/* Search or type barcode */}
-                    <FindProducts />
+                    <FindProducts searchProducts={handleSearchProducts} AddToCart={AddToCart}/>
                     {/* Product List */}
-                    <Products AddToCart={AddToCart}/>
+                    <Products searchProductItem={products} AddToCart={AddToCart}/>
                 </div>
                 <div className="col-md-4 position-fixed w-100" style={{right:'0'}}>
                     {/* Card Detail */}

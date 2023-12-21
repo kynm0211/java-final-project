@@ -47,7 +47,7 @@ function ProductItem({product, AddToCart}) {
             <div className="card border-rounded">
                 <div className="card-body product__item">
                     <div className="text-right mb-2">
-                        <a title='Click here to view more detail' className="btn btn-sm btn-primary" target='_blank' href={'/product/'+product.barcode}>
+                        <a title='Click here to view more detail' className="btn btn-sm btn-primary" target='_blank' href={'/products/'+product.barcode}>
                             <i className="fa-solid fa-circle-info"></i>
                         </a>
                     </div>

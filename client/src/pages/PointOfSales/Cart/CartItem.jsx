@@ -1,7 +1,7 @@
 function CartItem({product, UpdateCart}) {
 
     const handleChangeAmount = (type)=>{
-        const id = document.getElementById(product._id);
+        const id = document.getElementById(product.id);
         const value = id.value;
 
 
@@ -11,7 +11,7 @@ function CartItem({product, UpdateCart}) {
         }
 
         for(let i = 0; i < cart.length; i++){
-            if(cart[i]._id === product._id){
+            if(cart[i].id === product.id){
                 if(type === '-'){
                     // Minus Amount
                     cart[i].amount--;
@@ -44,7 +44,7 @@ function CartItem({product, UpdateCart}) {
         }
 
         for(let i = 0; i < cart.length; i++){
-            if(cart[i]._id === id){
+            if(cart[i].id === id){
                 cart.splice(i, 1);
                 break;
             }
@@ -81,12 +81,12 @@ function CartItem({product, UpdateCart}) {
                             value={product.amount}
                             min="1"
                             style={{width: '50px'}}
-                            id={product._id}
+                            id={product.id}
                         />
                         <button onClick={()=> handleChangeAmount('+')} className="btn btn-sm btn-secondary">+</button>
                     </div>
                     <button
-                        onClick={() => handleConfirmDelete(product._id, product.name)}
+                        onClick={() => handleConfirmDelete(product.id, product.name)}
                         title="Click here to remove this product"
                         className="btn btn-sm btn-danger mt-1"
                         data-toggle="modal" data-target="#deleteModal"

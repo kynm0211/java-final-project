@@ -4,7 +4,7 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import Pagination from "../../../components/Pagination";
 import LoadingImg from "../../../components/Layout/components/LoadingImg";
-function Products({AddToCart}) {
+function Products({searchProductItem, AddToCart}) {
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -14,11 +14,16 @@ function Products({AddToCart}) {
     const [divider, setDivider] = useState(1);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    
 
     useEffect(() => {
-        handleFetchProducts();
+        if(searchProductItem.length === 0){
+            handleFetchProducts();
+        }else{
+            setProducts(searchProductItem);
+        }
+    }, [page, searchProductItem]);
 
-    }, [page]);
 
     const handleFetchProducts = async () => {
         setError(null);
@@ -43,7 +48,6 @@ function Products({AddToCart}) {
             setError(error.message);
         });
     }
-
     
     return (
         <div className="row mt-5">

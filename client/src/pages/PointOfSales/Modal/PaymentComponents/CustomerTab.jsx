@@ -48,12 +48,12 @@ function CustomerTab({isPay}) {
             
             })
             .then(response => {
-                const data = response.data;
-                if(data.code !== 0){
-                    setError(data.message);
+                const res = response.data;
+                if(res.code !== 0){
+                    setError(res.message);
                 }else{
-                    setName(data.data.name);
-                    setAddress(data.data.address);
+                    setName(res.data.name);
+                    setAddress(res.data.address);
                 }
             })
             .catch((error) => {

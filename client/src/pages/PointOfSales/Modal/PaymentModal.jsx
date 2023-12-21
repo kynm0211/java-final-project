@@ -40,6 +40,7 @@ function PaymentModal({UpdateCart, resetCart}) {
         axios.post('/api/pos/create-a-bill',payment,{
             headers: {
                 'Authorization': token,
+                "Content-Type": "application/json"
             }
         })
             .then(response => {

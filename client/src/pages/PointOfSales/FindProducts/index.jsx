@@ -1,6 +1,8 @@
 import Search from "./searchComponent";
 import Barcode from "./barcodeComponent";
-function FindProducts() {
+import { useState, useEffect } from 'react';
+
+function FindProducts({AddToCart, searchProducts}) {
     return ( 
         <div className="row">
             <div className="col-12 bg-light py-5 shadow-sm">
@@ -15,10 +17,10 @@ function FindProducts() {
 
                 <div className="tab-content">
                     <div className="tab-pane container active" id="search">
-                        <Search />
+                        <Search searchProducts={searchProducts}/>
                     </div>
                     <div className="tab-pane container fade" id="barcode">
-                        <Barcode />
+                        <Barcode AddToCart={AddToCart}/>
                     </div>
                 </div>
             </div>
