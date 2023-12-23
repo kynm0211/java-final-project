@@ -70,95 +70,92 @@ public class POSController {
     private Package createABill(@RequestBody PaymentModel payment) {
         try {
             // Get data from RequestBody
-            List<CartItem> cart = extractCart(payment.getCart());
-
-            Customer customer = extractCustomer(payment.getCustomer());
-
+            List<CartItem> carts = extractCart(payment.getCart());
+            Customer cus = extractCustomer(payment.getCustomer());
 
             // Customer session
-            CustomerModel customerModel = cusDb.findByPhone(customer.getPhone());
+            CustomerModel customerModel = cusDb.findByPhone(cus.getPhone());
             if(customerModel == null) {
-                if(!customer.getPhone().isEmpty() &&
-                        !customer.getName().isEmpty() &&
-                        !customer.getAddress().isEmpty()) {
-                        customerModel = new CustomerModel(customer.getName(), customer.getPhone(), customer.getAddress(), url);
+                if(!cus.getPhone().isEmpty() &&
+                        !cus.getName().isEmpty() &&
+                        !cus.getAddress().isEmpty()) {
+                        customerModel = new CustomerModel(cus.getName(), cus.getPhone(), cus.getAddress(), url);
                         cusDb.save(customerModel);
                 } else {
                     return new Package(403, "The data of the customer is not valid", null);
                 }
             }
-//            // Cart session
-//            List<Map<String, Object>> cartMap = new ArrayList<>();
-//            for (int i = 0; i < payment.getCart().length; i++) {
-//                Map<String, Object> map = mapper.readValue(mapper.writeValueAsString(payment.getCart()[i]), Map.class);
-//                cartMap.add(map);
-//            }
-//
-//            // Staff session
-//            Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(payment.getToken()).getBody();
-//            String _id = claims.get("_id", String.class);
-//
-//            // Calculate bill
-//            int sub_total = 0, count = 0;
-//            ArrayList<ProductCartModel> productCartModels = new ArrayList<>();
-//            for(Map<String, Object> cart: cartMap) {
-//                ProductCartModel productCartModel = new ProductCartModel();
-//                ProductModel product = proDb.findByBarcode(cart.get("barcode").toString());
-//                int amount = Integer.parseInt(cart.get("amount").toString());
-//                double retail_price = product.getRetail_price();
-//                sub_total += (int) Math.round(amount * retail_price);
-//                count += amount;
-//                productCartModel.setName(product.getName());
-//                productCartModel.setQuantity(amount);
-//                productCartModel.setBarcode(product.getBarcode());
-//                productCartModel.setRetail_price((int) product.getRetail_price());
-//                productCartModel.setImport_price((int) product.getImport_price());
-//                productCartModel = proCartDb.save(productCartModel);
-//                productCartModels.add(productCartModel);
-//            }
-//            int tax_fee = sub_total * payment.getTaxrate() / 100;
-//            int total = sub_total + tax_fee;
-//            int change = payment.getCash() - total;
-//            String order_number = java.time.LocalTime.now()
-//                    .toString()
-//                    .replace(".", "")
-//                    .replace(":", "")
-//                    .substring(0, 12);
-//
-//            if(change < 0) {
-//                return new Package(403, "The cash is not enough", null);
-//            }
-//
-//            // Create a bill
-//            OrderModel order = new OrderModel();
-//            order.setOrderNumber(order_number);
-//            order.setCustomerId(cusDb.findByPhone(cusMap.get("phone").toString()).getId());
-//            order.setStaffId(_id);
-//            order.setTaxrate(payment.getTaxrate());
-//            order.setTaxfee(tax_fee);
-//            order.setSub_total(sub_total);
-//            order.setCash(payment.getCash());
-//            order.setChange(change);
-//            order.setTotal(total);
-//            order.setQuantity(count);
-//            order.setPaymentMethod((Integer) cusMap.get("paymentMethod"));
-//            order.setCreated_date(String.valueOf(java.time.LocalDateTime.now()));
-//            ordDb.save(order);
-//
-//            // Create a detail bill
-//            OrderDetailModel orderDetail = new OrderDetailModel();
-//            orderDetail.setOrder_id(order.getId());
-//            orderDetail.setOrder_number(order.getOrderNumber());
-//            orderDetail.setProducts(productCartModels);
-//            ordDetailDb.save(orderDetail);
-//
-//            return new Package(0, "Success", order);
+
+            // Staff session
+            Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(payment.getToken()).getBody();
+            String _id = claims.get("_id", String.class);
+
+            // Calculate bill
+            int sub_total = 0, count = 0;
+            ArrayList<ProductCartModel> productCartModels = new ArrayList<>();
+            for(CartItem cart : carts ) {
+                ProductCartModel productCartModel = new ProductCartModel();
+                ProductModel product = proDb.findByBarcode(cart.getBarcode());
+                int amount = Integer.parseInt(String.valueOf(cart.getAmount()));
+                double retail_price = product.getRetail_price();
+                sub_total += (int) Math.round(amount * retail_price);
+                count += amount;
+                productCartModel.setName(product.getName());
+                productCartModel.setQuantity(amount);
+                productCartModel.setBarcode(product.getBarcode());
+                productCartModel.setRetail_price((int) product.getRetail_price());
+                productCartModel.setImport_price((int) product.getImport_price());
+                productCartModel = proCartDb.save(productCartModel);
+                productCartModels.add(productCartModel);
+            }
+            int tax_fee = sub_total * payment.getTaxrate() / 100;
+            int total = sub_total + tax_fee;
+            int change = payment.getCash() - total;
+            String order_number = java.time.LocalTime.now()
+                    .toString()
+                    .replace(".", "")
+                    .replace(":", "")
+                    .substring(0, 12);
+
+            if(change < 0) {
+                return new Package(403, "The cash is not enough", null);
+            }
+
+            // Create a bill
+            OrderModel orderModel = new OrderModel();
+            orderModel.setOrderNumber(order_number);
+            orderModel.setCustomerId(cusDb.findByPhone(customerModel.getPhone()).getId());
+            orderModel.setStaffId(_id);
+            orderModel.setTaxrate(payment.getTaxrate());
+            orderModel.setTaxfee(tax_fee);
+            orderModel.setSub_total(sub_total);
+            orderModel.setCash(payment.getCash());
+            orderModel.setChange(change);
+            orderModel.setTotal(total);
+            orderModel.setQuantity(count);
+            orderModel.setPaymentMethod(cus.getPaymentMethod());
+            orderModel.setCreated_date(String.valueOf(java.time.LocalDateTime.now()));
+            ordDb.save(orderModel);
+
+            // Create a detail bill
+            OrderDetailModel orderDetailModel = new OrderDetailModel();
+            orderDetailModel.setOrder_id(orderModel.getId());
+            orderDetailModel.setOrder_number(orderModel.getOrderNumber());
+            orderDetailModel.setProducts(productCartModels);
+            ordDetailDb.save(orderDetailModel);
+
+            Object data = new Object() {
+                public final OrderModel order = orderModel;
+                public final CustomerModel customer = cusDb.findByPhone(cus.getPhone());
+                public final UserModel staff = userDb.findUserModelById(_id);
+                public final OrderDetailModel orderDetail = orderDetailModel;
+            };
+
+            return new Package(0, "Success", data);
         } catch (Exception e) {
             return new Package(404, e.getMessage(), null);
         }
     }
-
-
 
     @GetMapping("/search-product/{barcode}") // An Nguyen
     private Package searchProduct(@PathVariable("barcode") String barcode){
@@ -190,7 +187,6 @@ public class POSController {
     @ToString
     public static class PaymentModel {
         private int taxrate;
-
         private String customer;
         private String cart;
         private int cash;
