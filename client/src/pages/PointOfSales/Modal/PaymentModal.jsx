@@ -49,7 +49,7 @@ function PaymentModal({UpdateCart, resetCart}) {
                     setError(data.message);
                 }else{
                     const order = data.data;
-                    const order_number = order.order_number;
+                    const order_number = order.orderNumber;
                     axios.get('/api/orders/'+order_number, {
                         headers: {
                             'Authorization': token,

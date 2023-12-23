@@ -50,7 +50,7 @@ function OrderList({orders, fetch}) {
                         </thead>
                         <tbody>
                         {orders && orders
-                            .filter(order => order.order_number && order.order_number.toLowerCase().includes(search.toLowerCase()))
+                            .filter(order => order.orderNumber && order.orderNumber.toLowerCase().includes(search.toLowerCase()))
                             .map((order, index) => (
                                 <OrderItem key={index} index={index + 1} item={order} />
                         ))}

@@ -66,7 +66,7 @@ function History() {
                 )}
                 {!loading && (
                     <div className="card-footer">
-                        #{customer && customer._id}
+                        #{customer && customer.id}
                     </div>
                 )}
                 {error && (

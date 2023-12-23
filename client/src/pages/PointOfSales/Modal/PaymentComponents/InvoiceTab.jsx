@@ -6,6 +6,7 @@ import Num2VND from "../../../../components/Num2VND";
 function InvoiceTab({invoice}) {
 
     useEffect(() => {
+        console.log(invoice);
     }, [invoice]); 
 
     const downloadPDF = ()=>{
@@ -18,7 +19,7 @@ function InvoiceTab({invoice}) {
                 console.log(componentWidth);
                 const componentHeight = doc.internal.pageSize.getHeight();
                 doc.addImage(imgData, 'PNG', 0, 0, componentWidth, componentHeight);
-                doc.save(`invoice-${invoice.order.order_number}.pdf`);
+                doc.save(`invoice-${invoice.order.orderNumber}.pdf`);
             })
     }
 
@@ -43,7 +44,7 @@ function InvoiceTab({invoice}) {
                                     src="https://firebasestorage.googleapis.com/v0/b/nodejs-final-8bdf4.appspot.com/o/919825.png?alt=media&token=29bd9385-a5f1-4e95-ab7b-86747f4d62f9"/>
                             </div>
                             <div className="col">
-                                <p><strong>Invoice Number</strong>: {invoice&&invoice.order.order_number}</p>
+                                <p><strong>Invoice Number</strong>: {invoice&&invoice.order.orderNumber}</p>
                                 <p><strong>Invoice Date:</strong> {invoice&& new Date(invoice.order.created_date).toDateString()}</p>
                             </div>
                         </div>
@@ -54,7 +55,7 @@ function InvoiceTab({invoice}) {
                                 <div className="form-group">
                                     <label><strong>Company</strong></label>
                                     <br />
-                                    <span>NodeJS POS Inc.</span>
+                                    <span>Java POS Inc.</span>
                                 </div>
                                 <div className="form-group">
                                     <label><strong>Name Staff</strong></label>

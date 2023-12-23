@@ -83,7 +83,7 @@ function OrderDetail() {
                     <div className="col">
                         <div className="form-group">
                             <label><strong>Invoice number</strong></label>
-                            <p>#{order&&order.order.order_number}</p>
+                            <p>#{order&&order.order.orderNumber}</p>
                         </div>
                         <div className="form-group">
                             <label><strong>Date</strong></label>

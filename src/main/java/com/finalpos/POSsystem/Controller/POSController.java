@@ -140,18 +140,14 @@ public class POSController {
             // Create a detail bill
             OrderDetailModel orderDetailModel = new OrderDetailModel();
             orderDetailModel.setOrder_id(orderModel.getId());
-            orderDetailModel.setOrder_number(orderModel.getOrderNumber());
+            orderDetailModel.setOrderNumber(orderModel.getOrderNumber());
             orderDetailModel.setProducts(productCartModels);
             ordDetailDb.save(orderDetailModel);
 
-            Object data = new Object() {
-                public final OrderModel order = orderModel;
-                public final CustomerModel customer = cusDb.findByPhone(cus.getPhone());
-                public final UserModel staff = userDb.findUserModelById(_id);
-                public final OrderDetailModel orderDetail = orderDetailModel;
-            };
 
-            return new Package(0, "Success", data);
+
+
+            return new Package(0, "Success", orderModel);
         } catch (Exception e) {
             return new Package(404, e.getMessage(), null);
         }

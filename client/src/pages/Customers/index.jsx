@@ -21,7 +21,7 @@ function Customers() {
     const handleFetchCustomers = async () => {
         setError(null);
         setLoading(true);
-        axios.get('/api/customers?page='+page, {
+        axios.get('/api/customers/?page='+page, {
             headers: {
                 'Authorization': localStorage.getItem('token')
             }

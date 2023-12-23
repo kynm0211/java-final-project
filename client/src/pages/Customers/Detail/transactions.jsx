@@ -7,7 +7,7 @@ function Transactions({customer_id}) {
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const page = queryParams.get('page');
+    const page = queryParams.get('page') || 1;
 
     const [transactions, setTransactions] = useState(null);
     const [divider, setDivider] = useState(1);

@@ -16,6 +16,6 @@ public class OrderDetailModel {
     @Id
     private String id;
     private String order_id;
-    private String order_number;
+    private String orderNumber;
     private ArrayList<ProductCartModel> products;
 }

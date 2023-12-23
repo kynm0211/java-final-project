@@ -52,7 +52,7 @@ function CustomerDetail() {
                             <Profile customer={customer} />
                         </div>
                         <div id="transaction" class="container tab-pane">
-                            {customer&&<Transactions customer_id={customer._id} />}
+                            {customer&&<Transactions customer_id={customer.id} />}
                         </div>
                     </div>
                         

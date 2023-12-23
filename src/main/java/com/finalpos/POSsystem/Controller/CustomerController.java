@@ -55,18 +55,43 @@ public class CustomerController {
     @GetMapping("/{id}") // Đạt
     private Package getCustomerById(@PathVariable("id") String id){
         try {
-            Optional<CustomerModel> userModel = cusDb.findById(id);
-            return new Package(0, "success", userModel);
+            CustomerModel customer = cusDb.findCustomerById(id);
+            return new Package(0, "success", customer);
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
     }
 
     @GetMapping("/{id}/transactions") // Đạt
-    private Package getTransactionsByCustomerId(@PathVariable("id") String id){
+    private Package getTransactionsByCustomerId(@PathVariable("id") String id, @RequestParam Optional<String> page){
         try {
-            List<OrderModel> orderModels = ordDb.findByCustomerId(id);
-            return new Package(0, "success", orderModels);
+            int pageSize = 10;
+            int pageNumber = 1;
+            if(!page.isEmpty() && page.get() != "null") {
+                pageNumber = Integer.parseInt(page.get());
+            }
+            int skipAmount = (pageNumber - 1) * pageSize;
+            int totalOrders = (int) ordDb.count();
+            int totalPages = (int) Math.ceil((double) totalOrders / pageSize);
+
+
+            List<OrderModel> orderList = ordDb.findByCustomerId(id);
+            List<OrderModel> order = new ArrayList<>();
+
+            // Check num of users in the last page
+            // It will continue() when page + 1 (skipAmount > size()) -> reduce run time
+            int endIdx = Math.min(skipAmount + pageSize, orderList.size());
+            for (int i = skipAmount; i < endIdx; i++) {
+                order.add(orderList.get(i));
+            }
+
+            CustomerModel customerDB = cusDb.findCustomerById(id);
+            Object data = new Object() {
+                public final List<OrderModel> transactions = order;
+                public final int divider = totalPages;
+                public final CustomerModel customer = customerDB;
+            };
+            return new Package(0, "success", data);
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }

@@ -19,7 +19,7 @@ function Orders() {
     const fetchOrders = async () => {
         setLoading(true);
         setError(null);
-        axios.get('/api/orders?page='+page, {
+        axios.get('/api/orders/?page='+page, {
             headers: {
                 'Authorization': localStorage.getItem('token')
             }
