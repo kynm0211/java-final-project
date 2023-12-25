@@ -46,7 +46,7 @@ function OrderDetail() {
                 const componentWidth = doc.internal.pageSize.getWidth();
                 const componentHeight = doc.internal.pageSize.getHeight();
                 doc.addImage(imgData, 'PNG', 0, 0, componentWidth, componentHeight);
-                doc.save(`invoice-${order.order.order_number}.pdf`);
+                doc.save(`invoice-${order.order.orderNumber}.pdf`);
             })
     }
 
