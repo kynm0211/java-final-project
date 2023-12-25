@@ -96,6 +96,7 @@ public class POSController {
             for(CartItem cart : carts ) {
                 ProductCartModel productCartModel = new ProductCartModel();
                 ProductModel product = proDb.findByBarcode(cart.getBarcode());
+                product.setPurchase(true);
                 int amount = Integer.parseInt(String.valueOf(cart.getAmount()));
                 double retail_price = product.getRetail_price();
                 sub_total += (int) Math.round(amount * retail_price);
@@ -107,6 +108,7 @@ public class POSController {
                 productCartModel.setImport_price((int) product.getImport_price());
                 productCartModel = proCartDb.save(productCartModel);
                 productCartModels.add(productCartModel);
+                proDb.save(product);
             }
             int tax_fee = sub_total * payment.getTaxrate() / 100;
             int total = sub_total + tax_fee;

@@ -173,7 +173,7 @@ public class ProductsController {
         try {
             ProductModel product = db.findByBarcode(barcode);
             if(product != null) {
-                if(!product.getPurchase()) {
+                if(product.getPurchase() == false) {
                     ProductModel result = db.removeProductModelByBarcode(barcode);
                     return new Package(0, "Product deleted successfully", result);
                 } else {

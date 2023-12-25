@@ -75,7 +75,6 @@ function Customers() {
                                     <th scope="col">Full of name</th>
                                     <th scope="col">Phone</th>
                                     <th scope="col">Address</th>
-                                    <th scope="col">Creation Date</th>
                                     <th scope="col">Option</th>
                                 </tr>
                             </thead>
