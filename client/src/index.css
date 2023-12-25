@@ -12,10 +12,14 @@
   background: var(--main-color-light); /* color of the track */
 }
 :root{
-  --main-background: #ED7D31;
+  /* --main-background: #ED7D31;
   --main-color-light: #6C5F5B;
   --sub-background: #4F4A45;
-  --main-color: #F6F1EE;
+  --main-color: #F6F1EE; */
+   --main-background: #96B6C5;
+  --main-color-light: #ADC4CE;
+  --sub-background: #f04cff;
+  --main-color: #F1F0E8;
 }
 /* Firefox scrollbar */
 /* Note: You may need to use the Gecko engine prefix for Firefox, depending on the version. */

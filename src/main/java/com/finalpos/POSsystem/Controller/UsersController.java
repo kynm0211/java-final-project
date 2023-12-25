@@ -177,7 +177,7 @@ public class UsersController {
 
             properties.put("mail.smtp.host", stringHost);
             properties.put("mail.smtp.port", "465");
-            properties.put("mail.smtp.ssl.enable", "true");
+            properties.put("mail.smtp.ssl.enable", "false");
             properties.put("mail.smtp.auth", "true");
 
             javax.mail.Session session = Session.getInstance(properties, new Authenticator() {

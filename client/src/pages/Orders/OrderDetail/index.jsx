@@ -69,11 +69,11 @@ function OrderDetail() {
                     <div className="col">
                         <h4 className='text-uppercase'><strong>Invoice</strong></h4>
                         <div className="my-3">
-                            <img width={100} src="https://firebasestorage.googleapis.com/v0/b/nodejs-final-8bdf4.appspot.com/o/919825.png?alt=media&token=29bd9385-a5f1-4e95-ab7b-86747f4d62f9" alt="" />
+                            <img width={100} src="https://firebasestorage.googleapis.com/v0/b/nodejs-final-8bdf4.appspot.com/o/javalogo.png?alt=media&token=799cf286-2d50-4384-9145-a2738bbabc28" alt="" />
                         </div>
                         <div className="form-group">
                             <label><strong>Company</strong></label>
-                            <p>NODEJS POS INC.</p>
+                            <p>JAVA POS INC.</p>
                         </div>
                         <div className="form-group">
                             <label><strong>Address</strong></label>

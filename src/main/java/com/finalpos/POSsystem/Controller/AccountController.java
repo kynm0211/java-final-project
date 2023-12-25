@@ -70,6 +70,10 @@ public class AccountController {
                 if(userDB.getStatus().equals("InActive")){
                     return new Package(401, "Your account is inactive", null);
                 }
+
+                if(userDB.getStatus().equals("Lock")){
+                    return new Package(401, "Your account is locked", null);
+                }
                 String tokenString = generateToken(userDB);
 
                 userDB.setPassword(null);
@@ -153,18 +157,54 @@ public class AccountController {
     }
 
     @PostMapping("/direct")
-    public Package direct(){
+    public Package direct(@RequestParam("token") String token){
         try{
-            return new Package(0, "success", null);
+            Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
+            String username = claims.get("username", String.class);
+            UserModel userDB = db.findByUsername(username);
+
+            if(userDB != null){
+                String generatedToken = generateToken(userDB);
+
+                if(userDB.getStatus().equals("InActive")){
+                    Object data = new Object(){
+                        public final String token = generatedToken;
+                        public final UserModel user = userDB;
+                    };
+
+                    return new Package(12, "Your account is inactive", data);
+                }
+
+                if(userDB.getStatus().equals("Lock")){
+                    return new Package(401, "Your account is locked", userDB);
+                }
+
+                return new Package(0, "success", userDB);
+            }
+            return new Package(404, "failed", null);
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }
     }
 
     @PutMapping("/renew-password")
-    public Package renewPassword(){
+    public Package renewPassword(@RequestHeader("Authorization") String token,
+                                 @RequestParam("password") String password){
         try{
-            return new Package(0, "success", null);
+            Claims claims = Jwts.parser().setSigningKey(JWT_Key).parseClaimsJws(token).getBody();
+            String username = claims.get("username", String.class);
+            UserModel user = db.findByUsername(username);
+
+            if(user != null){
+                String hashedPassword = passwordEndcoder.encode(password);
+
+                user.setPassword(hashedPassword);
+                user.setStatus("Active");
+                UserModel result = db.save(user);
+                return new Package(0, "success", result);
+            }
+
+            return new Package(403, "failed", null);
         }catch (Exception e){
             return new Package(404, e.getMessage(), null);
         }

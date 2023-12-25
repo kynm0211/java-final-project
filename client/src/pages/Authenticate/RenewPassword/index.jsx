@@ -31,7 +31,7 @@ function RenewPassword() {
         };
         axios.put('/api/account/renew-password', data, {
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded',
               'Authorization': `${token}`
             }
         })

@@ -49,7 +49,7 @@ export const Login = (props) => {
                 {/* Icon */}
                 <div className="fadeIn first">
                 <img 
-                    src="https://firebasestorage.googleapis.com/v0/b/nodejs-final-8bdf4.appspot.com/o/919825.png?alt=media&token=29bd9385-a5f1-4e95-ab7b-86747f4d62f9"
+                    src="https://firebasestorage.googleapis.com/v0/b/nodejs-final-8bdf4.appspot.com/o/javalogo.png?alt=media&token=799cf286-2d50-4384-9145-a2738bbabc28"
                     id="icon"
                     alt="User Icon"
                     className="my-3"

@@ -19,7 +19,11 @@ function DirectLogin() {
     const handleVerifyToken = async (token) =>{
 
         
-        axios.post('/api/account/direct', {token})
+        axios.post('/api/account/direct', {token}, {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            }
+        })
         .then(response => {
             setError(false);
             const res = response.data;

@@ -32,7 +32,7 @@ function Sidebar({role}) {
         {/* <!-- ========== Logo ============  --> */}
         <div className="logo-box" onClick={toggleSidebar}>
             <i className="fa-solid fa-bars"></i>
-            <Link className="logo-name" to="/">NODEJS FINAL</Link>
+            <Link className="logo-name" to="/">JAVA POS FINAL</Link>
         </div>
 
 
